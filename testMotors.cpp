@@ -1,7 +1,7 @@
 #include "alphabot.h"
 #include <ncurses.h>
 
-    int running = 1;
+int running = 1;
 
 int main(int, char **)
 {
@@ -14,8 +14,26 @@ int main(int, char **)
         while (running)
         {
                 int ch = getch();
-                if (ch == 27) {
+                switch (ch)
+                {
+                case 27:
                         running = 0;
+                        break;
+
+                case 'l':
+                        alphabot.setRightWheelSpeed(0.5);
+                        break;
+
+                case 'r':
+                        alphabot.setRightWheelSpeed(0.5);
+                        break;
+
+                case ' ':
+                        alphabot.setLeftWheelSpeed(0);
+                        alphabot.setRightWheelSpeed(0);
+                        break;
+
+                default:
                         break;
                 }
         }
