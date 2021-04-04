@@ -22,17 +22,20 @@ int main(int, char **)
                         break;
 
                 case 'l':
-			std::cerr << "Setting left speed\n";
+			mvaddstr(0, 0,"Setting left speed");
+			refresh();
                         alphabot.setLeftWheelSpeed(0.5);
                         break;
 
                 case 'r':
-			std::cerr << "Setting right speed\n";
+			mvaddstr(0,0,"Setting right speed");
+			refresh();
                         alphabot.setRightWheelSpeed(0.5);
                         break;
 
                 case ' ':
-			std::cerr << "Stopping\n";
+			mvaddstr(0,0,"Stopping");
+			refresh();
                         alphabot.setLeftWheelSpeed(0);
                         alphabot.setRightWheelSpeed(0);
                         break;
