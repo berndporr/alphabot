@@ -1,5 +1,5 @@
 #include "alphabot.h"
-#include <pigpio.h>
+#include <pigpiod_if2.h>
 #include <math.h>
 #include <iostream>
 
@@ -7,25 +7,26 @@
 
 AlphaBot::AlphaBot()
 {
-        if (gpioInitialise() < 0)
-        {
-                std::cerr << "Could not init gpio";
-                exit(1);
-        }
+	pi = pigpio_start(NULL, NULL);
+	if (pi < 0) {
+		std::string msg = "Cannot connect to the pigpio daemon.\n";
+		std::cerr << msg;
+		exit(1);
+	}
 }
 
 void AlphaBot::start(long _samplingInterval)
 {
-        gpioSetMode(GPIO_ENA,PI_OUTPUT);
-        gpioSetMode(GPIO_ENB,PI_OUTPUT);
-        gpioSetMode(GPIO_IN1,PI_OUTPUT);
-        gpioSetMode(GPIO_IN1,PI_OUTPUT);
-        gpioSetMode(GPIO_IN2,PI_OUTPUT);
-        gpioSetMode(GPIO_IN3,PI_OUTPUT);
-        gpioSetMode(GPIO_IN4,PI_OUTPUT);
+        set_mode(pi,GPIO_ENA,PI_OUTPUT);
+        set_mode(pi,GPIO_ENB,PI_OUTPUT);
+        set_mode(pi,GPIO_IN1,PI_OUTPUT);
+        set_mode(pi,GPIO_IN1,PI_OUTPUT);
+        set_mode(pi,GPIO_IN2,PI_OUTPUT);
+        set_mode(pi,GPIO_IN3,PI_OUTPUT);
+        set_mode(pi,GPIO_IN4,PI_OUTPUT);
 
-        gpioPWM(GPIO_ENA,0);
-        gpioPWM(GPIO_ENB,0);
+        set_PWM_dutycycle(pi,GPIO_ENA,0);
+        set_PWM_dutycycle(pi,GPIO_ENB,0);
 
         samplingInterval = _samplingInterval;
         CppTimer::start(samplingInterval);
@@ -36,7 +37,7 @@ void AlphaBot::stop()
         CppTimer::stop();
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
-        gpioTerminate();
+        pigpio_stop(pi);
 }
 
 void AlphaBot::timerEvent()
@@ -53,14 +54,14 @@ void AlphaBot::setLeftWheelSpeed(float speed)
                 speed = 1;
         leftWheelSpeed = speed;
         if (speed < 0) {
-                gpioWrite(GPIO_IN3,1);
-                gpioWrite(GPIO_IN4,0);
+                gpio_write(pi,GPIO_IN3,1);
+                gpio_write(pi,GPIO_IN4,0);
         } else {
-                gpioWrite(GPIO_IN3,0);
-                gpioWrite(GPIO_IN4,1);
+                gpio_write(pi,GPIO_IN3,0);
+                gpio_write(pi,GPIO_IN4,1);
         }
-        float max = (float)gpioGetPWMrange(GPIO_ENB);
-        gpioPWM(GPIO_ENB,(int)round(fabs(speed)*max));
+        float max = (float)get_PWM_range(pi,GPIO_ENB);
+        set_PWM_dutycycle(pi,GPIO_ENB,(int)round(fabs(speed)*max));
 }
 
 void AlphaBot::setRightWheelSpeed(float speed)
@@ -71,12 +72,12 @@ void AlphaBot::setRightWheelSpeed(float speed)
                 speed = 1;
         rightWheelSpeed = speed;
         if (speed < 0) {
-                gpioWrite(GPIO_IN1,0);
-                gpioWrite(GPIO_IN2,1);
+                gpio_write(pi,GPIO_IN1,0);
+                gpio_write(pi,GPIO_IN2,1);
         } else {
-                gpioWrite(GPIO_IN1,1);
-                gpioWrite(GPIO_IN2,0);
+                gpio_write(pi,GPIO_IN1,1);
+                gpio_write(pi,GPIO_IN2,0);
         }
-        float max = (float)gpioGetPWMrange(GPIO_ENA);
-        gpioPWM(GPIO_ENA,(int)round(fabs(speed)*max));
+        float max = (float)get_PWM_range(pi,GPIO_ENA);
+        set_PWM_dutycycle(pi,GPIO_ENA,(int)round(fabs(speed)*max));
 }

@@ -24,7 +24,7 @@ set_target_properties(alphabot PROPERTIES
   SOVERSION 1
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(alphabot ${CMAKE_THREAD_LIBS_INIT} pigpio rt)
+target_link_libraries(alphabot ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
 
 install(TARGETS alphabot EXPORT alphabot-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -39,7 +39,7 @@ add_library(alphabot_static
 set_target_properties(alphabot_static PROPERTIES
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(alphabot_static ${CMAKE_THREAD_LIBS_INIT} pigpio rt)
+target_link_libraries(alphabot_static ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
 
 install(TARGETS alphabot_static EXPORT alphabot_static-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

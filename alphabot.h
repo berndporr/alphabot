@@ -45,6 +45,7 @@ private:
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;
         float rightWheelSpeed = 0;
+	int pi = -1;
 };
 
 #endif
