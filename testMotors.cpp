@@ -1,5 +1,6 @@
 #include "alphabot.h"
 #include <ncurses.h>
+#include <iostream>
 
 int running = 1;
 
@@ -21,14 +22,17 @@ int main(int, char **)
                         break;
 
                 case 'l':
-                        alphabot.setRightWheelSpeed(0.5);
+			std::cerr << "Setting left speed\n";
+                        alphabot.setLeftWheelSpeed(0.5);
                         break;
 
                 case 'r':
+			std::cerr << "Setting right speed\n";
                         alphabot.setRightWheelSpeed(0.5);
                         break;
 
                 case ' ':
+			std::cerr << "Stopping\n";
                         alphabot.setLeftWheelSpeed(0);
                         alphabot.setRightWheelSpeed(0);
                         break;
