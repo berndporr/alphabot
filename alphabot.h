@@ -25,9 +25,14 @@ public:
                 stepCallback = _stepcallback;
         }
 
+        // set motor speed
         void setLeftWheelSpeed(float speed);
         void setRightWheelSpeed(float speed);
 
+        // get collision sensors
+        bool getCollisionLeft();
+        bool getCollisionRight();
+        
 private:
         static const int GPIO_ENA = 6;
         static const int GPIO_ENB = 26;
@@ -36,8 +41,8 @@ private:
         static const int GPIO_IN3 = 20;
         static const int GPIO_IN4 = 21;
 
-        static const int GPIO_COLLISION_L = 24; // GPIO=19;
-        static const int GPIO_COLLISION_R = 27; // GPIO=16;
+        static const int GPIO_COLLISION_L = 19;
+        static const int GPIO_COLLISION_R = 16;
 
         virtual void timerEvent();
 

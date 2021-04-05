@@ -5,8 +5,7 @@
 
 #define MAX_PWM 256
 
-AlphaBot::AlphaBot()
-{
+AlphaBot::AlphaBot() {
 	pi = pigpio_start(NULL, NULL);
 	if (pi < 0) {
 		std::string msg = "Cannot connect to the pigpio daemon.\n";
@@ -15,8 +14,8 @@ AlphaBot::AlphaBot()
 	}
 }
 
-void AlphaBot::start(long _samplingInterval)
-{
+void AlphaBot::start(long _samplingInterval) {
+        // motor control
         set_mode(pi,GPIO_ENA,PI_OUTPUT);
         set_mode(pi,GPIO_ENB,PI_OUTPUT);
         set_mode(pi,GPIO_IN1,PI_OUTPUT);
@@ -28,26 +27,28 @@ void AlphaBot::start(long _samplingInterval)
         set_PWM_dutycycle(pi,GPIO_ENA,0);
         set_PWM_dutycycle(pi,GPIO_ENB,0);
 
+        // collision sensor
+        set_mode(pi,GPIO_COLLISION_L,PI_INPUT);
+        set_mode(pi,GPIO_COLLISION_R,PI_INPUT);
+
+        // central processing
         samplingInterval = _samplingInterval;
         CppTimer::start(samplingInterval);
 }
 
-void AlphaBot::stop()
-{
+void AlphaBot::stop() {
         CppTimer::stop();
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
         pigpio_stop(pi);
 }
 
-void AlphaBot::timerEvent()
-{
+void AlphaBot::timerEvent() {
         if (nullptr != stepCallback)
                 stepCallback->step();
 }
 
-void AlphaBot::setLeftWheelSpeed(float speed)
-{
+void AlphaBot::setLeftWheelSpeed(float speed) {
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
@@ -64,8 +65,7 @@ void AlphaBot::setLeftWheelSpeed(float speed)
         set_PWM_dutycycle(pi,GPIO_ENB,(int)round(fabs(speed)*max));
 }
 
-void AlphaBot::setRightWheelSpeed(float speed)
-{
+void AlphaBot::setRightWheelSpeed(float speed) {
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
@@ -80,4 +80,13 @@ void AlphaBot::setRightWheelSpeed(float speed)
         }
         float max = (float)get_PWM_range(pi,GPIO_ENA);
         set_PWM_dutycycle(pi,GPIO_ENA,(int)round(fabs(speed)*max));
+}
+
+
+bool AlphaBot::getCollisionLeft() {
+        return gpio_read(pi, GPIO_COLLISION_L) == 0; 
+}
+
+bool AlphaBot::getCollisionRight() {
+        return gpio_read(pi, GPIO_COLLISION_R) == 0; 
 }

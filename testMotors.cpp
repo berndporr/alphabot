@@ -14,6 +14,9 @@ int main(int, char **)
         alphabot.start();
         while (running)
         {
+		char tmp[256];
+		sprintf(tmp,"L: %d, R: %d",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
+                mvaddstr(1,0,tmp);
                 int ch = getch();
                 switch (ch)
                 {
@@ -34,7 +37,7 @@ int main(int, char **)
                         break;
 
                 case ' ':
-			mvaddstr(0,0,"Stopping");
+			mvaddstr(0,0,"Stopping           ");
 			refresh();
                         alphabot.setLeftWheelSpeed(0);
                         alphabot.setRightWheelSpeed(0);
