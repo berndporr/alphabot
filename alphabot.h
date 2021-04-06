@@ -32,11 +32,14 @@ public:
 
         int getActualLeftWheelSpeed() { return leftWheelActualSpeed; }
         int getActualRightWheelSpeed() { return rightWheelActualSpeed; }
+        float getLeftDistance() { return leftDistance; }
+        float getRightDistance() { return rightDistance; }
+        float getBatteryLevel() { return batteryLevel; }
 
         // get collision sensors
         bool getCollisionLeft();
         bool getCollisionRight();
-        
+
 private:
         static const int GPIO_ENA = 6;
         static const int GPIO_ENB = 26;
@@ -53,7 +56,7 @@ private:
         static const int GPIO_SPEED_L = 8;
         static const int GPIO_SPEED_R = 7;
 
-        // TLC543
+        // TLC1543
         static const int GPIO_ADC_IOCLK = 25;
         static const int GPIO_ADC_ADDR = 24;
         static const int GPIO_ADC_DOUT = 23;
@@ -74,6 +77,8 @@ private:
 
         static void encoderEvent(int pi, unsigned user_gpio, unsigned level, uint32_t tick, void * userdata);
 
+        float readADC(int ch);
+
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;
@@ -85,6 +90,10 @@ private:
         int leftWheelCallbackID = 0;
         int rightWheelCallbackID = 0;
         int wheelTimerCounter = WHEEL_TIMER_COUNT;
+        int adc = 0;
+        float leftDistance = 0;
+        float rightDistance = 0;
+        float batteryLevel = 0;
 	int pi = -1;
 };
 

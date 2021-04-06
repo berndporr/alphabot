@@ -15,10 +15,12 @@ int main(int, char **)
         while (running)
         {
 		char tmp[256];
-		sprintf(tmp,"L: %d, R: %d",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
+		sprintf(tmp,"L: %d, R: %d     ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
                 mvaddstr(1,0,tmp);
-                sprintf(tmp,"L speed = %d, R speed = %d",alphabot.getActualLeftWheelSpeed(),alphabot.getActualRightWheelSpeed());
+                sprintf(tmp,"L speed = %d, R speed = %d    ",alphabot.getActualLeftWheelSpeed(),alphabot.getActualRightWheelSpeed());
                 mvaddstr(2,0,tmp);
+                sprintf(tmp,"ADC_L = %f, ADC_R = %f, Power = %f    ",alphabot.getLeftDistance(),alphabot.getRightDistance(),alphabot.getBatteryLevel());
+                mvaddstr(3,0,tmp);
                 int ch = getch();
                 switch (ch)
                 {

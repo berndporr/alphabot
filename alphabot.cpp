@@ -38,6 +38,12 @@ void AlphaBot::start(long _samplingInterval) {
         set_mode(pi,GPIO_COLLISION_L,PI_INPUT);
         set_mode(pi,GPIO_COLLISION_R,PI_INPUT);
 
+        const int spi_flags = 0;
+        adc = bb_spi_open(
+                pi,
+                GPIO_ADC_CS, GPIO_ADC_DOUT, GPIO_ADC_ADDR, GPIO_ADC_IOCLK,
+                20000, spi_flags);
+
         // wheel speed
         leftWheelCallbackID = callback_ex(pi, GPIO_SPEED_L, RISING_EDGE, encoderEvent, (void*)this);
         rightWheelCallbackID = callback_ex(pi, GPIO_SPEED_R, RISING_EDGE, encoderEvent, (void*)this);
@@ -50,6 +56,7 @@ void AlphaBot::start(long _samplingInterval) {
 void AlphaBot::stop() {
         callback_cancel(leftWheelCallbackID);
         callback_cancel(rightWheelCallbackID);
+        bb_spi_close(pi, GPIO_ADC_CS);
         CppTimer::stop();
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
@@ -69,9 +76,20 @@ void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void
         }
 }
 
+float AlphaBot::readADC(int ch) {
+        char tx[2];
+        char rx[2];
+        tx[0] = (char)(ch << 4);
+        bb_spi_xfer(pi, GPIO_ADC_CS, tx, rx, 2);
+        unsigned r = ((unsigned)(rx[0]) << 8) | (unsigned)(rx[1]);
+        return (float)r; 
+}
+
 void AlphaBot::timerEvent() {
         if (nullptr != stepCallback)
                 stepCallback->step();
+
+        // wheel speed
         wheelTimerCounter--;
         if (wheelTimerCounter < 1) {
                 leftWheelActualSpeed = leftWeelCounter;
@@ -80,6 +98,11 @@ void AlphaBot::timerEvent() {
                 rightWheelCounter = 0;
                 wheelTimerCounter = WHEEL_TIMER_COUNT;
         }
+
+        // ADC
+        leftDistance = readADC(ADC_DIST_L);
+        rightDistance = readADC(ADC_DIST_R);
+        batteryLevel = readADC(ADC_VIN);
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
