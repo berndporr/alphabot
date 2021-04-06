@@ -4,8 +4,8 @@
 #include <thread>
 #include "CppTimer.h"
 
-#define DEFAULT_SAMPLING_INTERVAL_NS (10 * 1000 * 1000) // 10ms
-#define WHEEL_TIMER_COUNT 100 // 1s
+#define DEFAULT_SAMPLING_INTERVAL_NS (100 * 1000 * 1000) // 10ms
+#define WHEEL_TIMER_COUNT 10 // 1s
 
 class AlphaBot : public CppTimer
 {
