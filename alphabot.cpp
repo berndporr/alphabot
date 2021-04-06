@@ -82,7 +82,7 @@ float AlphaBot::readADC(int ch) {
         tx[0] = (char)(ch << 4);
         bb_spi_xfer(pi, GPIO_ADC_CS, tx, rx, 2);
         unsigned r = ((unsigned)(rx[0]) << 8) | (unsigned)(rx[1]);
-        return (float)r; 
+        return (float)r / 1024; 
 }
 
 void AlphaBot::timerEvent() {
