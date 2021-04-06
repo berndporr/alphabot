@@ -46,6 +46,8 @@ private:
 
         virtual void timerEvent();
 
+        virtual void initPWM(int gpio, int pwm_frequency = 50);
+
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;

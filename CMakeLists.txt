@@ -46,5 +46,5 @@ install(TARGETS alphabot_static EXPORT alphabot_static-targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-add_executable (testMotors testMotors.cpp)
-target_link_libraries(testMotors alphabot_static ncurses)
+add_executable (testIO testIO.cpp)
+target_link_libraries(testIO alphabot_static ncurses)

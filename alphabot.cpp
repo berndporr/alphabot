@@ -14,6 +14,13 @@ AlphaBot::AlphaBot() {
 	}
 }
 
+void AlphaBot::initPWM(int gpio, int pwm_frequency) {
+        set_PWM_frequency(pi,gpio,pwm_frequency);
+        int rr = get_PWM_real_range(pi, gpio);
+        if ( ( rr > 255) && (rr < 20000) ) set_PWM_range(pi, gpio, rr);
+        set_PWM_dutycycle(pi,gpio,0);
+}
+
 void AlphaBot::start(long _samplingInterval) {
         // motor control
         set_mode(pi,GPIO_ENA,PI_OUTPUT);
@@ -24,8 +31,8 @@ void AlphaBot::start(long _samplingInterval) {
         set_mode(pi,GPIO_IN3,PI_OUTPUT);
         set_mode(pi,GPIO_IN4,PI_OUTPUT);
 
-        set_PWM_dutycycle(pi,GPIO_ENA,0);
-        set_PWM_dutycycle(pi,GPIO_ENB,0);
+        initPWM(GPIO_ENA);
+        initPWM(GPIO_ENB);
 
         // collision sensor
         set_mode(pi,GPIO_COLLISION_L,PI_INPUT);
