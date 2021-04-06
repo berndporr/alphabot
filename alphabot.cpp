@@ -38,21 +38,48 @@ void AlphaBot::start(long _samplingInterval) {
         set_mode(pi,GPIO_COLLISION_L,PI_INPUT);
         set_mode(pi,GPIO_COLLISION_R,PI_INPUT);
 
+        // wheel speed
+        leftWheelCallbackID = callback_ex(pi, GPIO_SPEED_L, RISING_EDGE, encoderEvent, (void*)this);
+        rightWheelCallbackID = callback_ex(pi, GPIO_SPEED_R, RISING_EDGE, encoderEvent, (void*)this);
+
         // central processing
         samplingInterval = _samplingInterval;
         CppTimer::start(samplingInterval);
 }
 
 void AlphaBot::stop() {
+        callback_cancel(leftWheelCallbackID);
+        callback_cancel(rightWheelCallbackID);
         CppTimer::stop();
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
         pigpio_stop(pi);
 }
 
+void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void * userdata) {
+        AlphaBot* alphabot = (AlphaBot*)userdata;
+        if (pi != alphabot->pi) return;
+        switch (user_gpio) {
+                case GPIO_SPEED_L:
+                        alphabot->leftWeelCounter++;
+                        break;
+                case GPIO_SPEED_R:
+                        alphabot->rightWheelCounter++;
+                        break;
+        }
+}
+
 void AlphaBot::timerEvent() {
         if (nullptr != stepCallback)
                 stepCallback->step();
+        wheelTimerCounter--;
+        if (wheelTimerCounter < 1) {
+                leftWheelActualSpeed = leftWeelCounter;
+                leftWeelCounter = 0;
+                rightWheelActualSpeed = rightWheelCounter;
+                rightWheelCounter = 0;
+                wheelTimerCounter = WHEEL_TIMER_COUNT;
+        }
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
