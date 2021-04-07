@@ -1,5 +1,11 @@
 # alphabot
-C++ class to access the functionality of the alphabot
+C++ class to access the basic functionality of the alphabot:
+https://www.waveshare.com/wiki/AlphaBot
+
+ - PWM motor control
+ - Distance sensor readings (digital and analogue)
+ - Battery voltage
+ - Wheel speed encoders
 
 ## Prerequisites
 
@@ -60,7 +66,7 @@ float getRightDistance()
 The function `getBatteryLevel()` provides the voltage of the battery
 in volt.
 
-### Angle encoders
+### Speed encoders
 
 These are horrible mechanical wheels and their signals are unreliable:
 ```
@@ -73,3 +79,13 @@ int getActualRightWheelSpeed()
 Whenever a new set of analogue readings is available the callback `step`
 in `StepCallback` is called. It contains the reference to the Alphabot
 class itself so that one can read the different ADC values.
+
+## Demo program
+
+`testIO` is a simple test program which displays the different
+senor readings.
+
+Press `l` to start the left motor, `r` to start the right motor
+and the spacebar to stop them.
+
+ESC terminates the program and closes the connection.
