@@ -1,10 +1,16 @@
+/**
+ * Copyright (c) 2021 by Bernd Porr
+ * Apache License 2.0
+ **/
+
+
 #ifndef ALPHABOT_H
 #define ALPHABOT_H
 
 #include <thread>
 #include "CppTimer.h"
 
-#define DEFAULT_SAMPLING_INTERVAL_NS (100 * 1000 * 1000) // 10ms
+#define DEFAULT_SAMPLING_INTERVAL_NS (100 * 1000 * 1000) // 100ms
 #define WHEEL_TIMER_COUNT 10 // 1s
 
 class AlphaBot : public CppTimer

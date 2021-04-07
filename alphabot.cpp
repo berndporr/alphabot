@@ -4,7 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 
-#define MAX_PWM 256
+
 
 AlphaBot::AlphaBot() {
 	pi = pigpio_start(NULL, NULL);
