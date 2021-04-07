@@ -32,9 +32,9 @@ public:
 
         int getActualLeftWheelSpeed() { return leftWheelActualSpeed; }
         int getActualRightWheelSpeed() { return rightWheelActualSpeed; }
-        unsigned getLeftDistance() { return leftDistance; }
-        unsigned getRightDistance() { return rightDistance; }
-        unsigned getBatteryLevel() { return batteryLevel; }
+        float getLeftDistance() { return (float)leftDistance / ADCmax; }
+        float getRightDistance() { return (float)rightDistance / ADCmax; }
+        float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref; }
 
         // get collision sensors
         bool getCollisionLeft();
@@ -69,7 +69,8 @@ private:
         static const int ADC_DIST_L = 8;
         static const int ADC_DIST_R = 9;
         static const int ADC_VIN = 10;
-
+        static const unsigned ADCmax = 1023;
+        static const unsigned ADCvref = 5;
 
         virtual void timerEvent();
 
@@ -77,7 +78,7 @@ private:
 
         static void encoderEvent(int pi, unsigned user_gpio, unsigned level, uint32_t tick, void * userdata);
 
-        unsigned readADC(int ch);
+        unsigned readADC(unsigned ch);
 
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
@@ -90,7 +91,6 @@ private:
         int leftWheelCallbackID = 0;
         int rightWheelCallbackID = 0;
         int wheelTimerCounter = WHEEL_TIMER_COUNT;
-        int adc = 0;
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;

@@ -2,6 +2,7 @@
 #include <pigpiod_if2.h>
 #include <math.h>
 #include <iostream>
+#include <unistd.h>
 
 #define MAX_PWM 256
 
@@ -76,14 +77,10 @@ void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void
         }
 }
 
-unsigned AlphaBot::readADC(int channel) {
-	unsigned value;
-	unsigned i;
-	unsigned LSB = 0, MSB = 0;
- 
-	channel = channel << 4;
+unsigned AlphaBot::readADC(unsigned channel) {
         gpio_write(pi,GPIO_ADC_CS,0);
-	for (i = 0; i < 4; i ++) {
+	channel = channel << 4;
+	for (unsigned i = 0; i < 4; i ++) {
 		if(channel & 0x80)
 			gpio_write(pi,GPIO_ADC_ADDR,1);
 		else 
@@ -92,32 +89,29 @@ unsigned AlphaBot::readADC(int channel) {
 		gpio_write(pi,GPIO_ADC_IOCLK,0);
 		channel = channel << 1;
 	}
-	for (i = 0; i < 6;i ++) {
+	for (unsigned i = 0; i < 6;i ++) {
 		gpio_write(pi,GPIO_ADC_IOCLK,1);
 		gpio_write(pi,GPIO_ADC_IOCLK,0);
 	}
  
-//	delayMicroseconds(15);
-	for (i = 0; i < 2; i ++) 
-	{
+        unsigned value = 0; 
+	for (unsigned i = 0; i < 2; i ++) {
 		gpio_write(pi,GPIO_ADC_IOCLK,1);
-		MSB <<= 1;
+		value <<= 1;
 		if (gpio_read(pi,GPIO_ADC_DOUT))
-			MSB |= 0x1;
+			value |= 0x1;
 		gpio_write(pi,GPIO_ADC_IOCLK,0);
 	} 
-	for (i = 0; i < 8; i ++) 
-	{
+
+	for (unsigned i = 0; i < 8; i ++) {
 		gpio_write(pi,GPIO_ADC_IOCLK,1);
-		LSB <<= 1;
+		value <<= 1;
 		if (gpio_read(pi,GPIO_ADC_DOUT))
-			LSB |= 0x1;
+			value |= 0x1;
 		gpio_write(pi,GPIO_ADC_IOCLK,0);
 	} 
         gpio_write(pi,GPIO_ADC_CS,1);
-	value = MSB;
-	value <<= 8;
-	value |= LSB;
+
 	return value; 
 }
 	
