@@ -17,7 +17,7 @@ public:
 			alphabot.getActualRightWheelSpeed());
                 mvaddstr(2,0,tmp);
                 sprintf(tmp,
-			"ADC_L = %f, ADC_R = %f, Power = %f    ",
+			"ADC_L = %x, ADC_R = %x, Power = %x    ",
 			alphabot.getLeftDistance(),
 			alphabot.getRightDistance(),
 			alphabot.getBatteryLevel());

@@ -38,15 +38,16 @@ void AlphaBot::start(long _samplingInterval) {
         set_mode(pi,GPIO_COLLISION_L,PI_INPUT);
         set_mode(pi,GPIO_COLLISION_R,PI_INPUT);
 
-        const int spi_flags = 0;
-        adc = bb_spi_open(
-                pi,
-                GPIO_ADC_CS, GPIO_ADC_DOUT, GPIO_ADC_ADDR, GPIO_ADC_IOCLK,
-                20000, spi_flags);
-
         // wheel speed
         leftWheelCallbackID = callback_ex(pi, GPIO_SPEED_L, RISING_EDGE, encoderEvent, (void*)this);
         rightWheelCallbackID = callback_ex(pi, GPIO_SPEED_R, RISING_EDGE, encoderEvent, (void*)this);
+
+        // ADC
+        set_mode(pi,GPIO_ADC_CS,PI_OUTPUT);
+        gpio_write(pi,GPIO_ADC_CS,1);
+        set_mode(pi,GPIO_ADC_ADDR,PI_OUTPUT);
+        set_mode(pi,GPIO_ADC_IOCLK,PI_OUTPUT);
+        set_mode(pi,GPIO_ADC_DOUT,PI_INPUT);
 
         // central processing
         samplingInterval = _samplingInterval;
@@ -56,7 +57,6 @@ void AlphaBot::start(long _samplingInterval) {
 void AlphaBot::stop() {
         callback_cancel(leftWheelCallbackID);
         callback_cancel(rightWheelCallbackID);
-        bb_spi_close(pi, GPIO_ADC_CS);
         CppTimer::stop();
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
@@ -76,14 +76,51 @@ void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void
         }
 }
 
-float AlphaBot::readADC(int ch) {
-        char tx[2];
-        char rx[2];
-        tx[0] = (char)(ch << 4);
-        bb_spi_xfer(pi, GPIO_ADC_CS, tx, rx, 2);
-        unsigned r = ((unsigned)(rx[0]) << 8) | (unsigned)(rx[1]);
-        return (float)r / 1024; 
+unsigned AlphaBot::readADC(int channel) {
+	unsigned value;
+	unsigned i;
+	unsigned LSB = 0, MSB = 0;
+ 
+	channel = channel << 4;
+        gpio_write(pi,GPIO_ADC_CS,0);
+	for (i = 0; i < 4; i ++) {
+		if(channel & 0x80)
+			gpio_write(pi,GPIO_ADC_ADDR,1);
+		else 
+			gpio_write(pi,GPIO_ADC_ADDR,0);
+		gpio_write(pi,GPIO_ADC_IOCLK,1);
+		gpio_write(pi,GPIO_ADC_IOCLK,0);
+		channel = channel << 1;
+	}
+	for (i = 0; i < 6;i ++) {
+		gpio_write(pi,GPIO_ADC_IOCLK,1);
+		gpio_write(pi,GPIO_ADC_IOCLK,0);
+	}
+ 
+//	delayMicroseconds(15);
+	for (i = 0; i < 2; i ++) 
+	{
+		gpio_write(pi,GPIO_ADC_IOCLK,1);
+		MSB <<= 1;
+		if (gpio_read(pi,GPIO_ADC_DOUT))
+			MSB |= 0x1;
+		gpio_write(pi,GPIO_ADC_IOCLK,0);
+	} 
+	for (i = 0; i < 8; i ++) 
+	{
+		gpio_write(pi,GPIO_ADC_IOCLK,1);
+		LSB <<= 1;
+		if (gpio_read(pi,GPIO_ADC_DOUT))
+			LSB |= 0x1;
+		gpio_write(pi,GPIO_ADC_IOCLK,0);
+	} 
+        gpio_write(pi,GPIO_ADC_CS,1);
+	value = MSB;
+	value <<= 8;
+	value |= LSB;
+	return value; 
 }
+	
 
 void AlphaBot::timerEvent() {
         // wheel speed
