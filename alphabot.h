@@ -14,14 +14,14 @@ public:
         class StepCallback
         {
         public:
-                virtual void step() = 0;
+                virtual void step(AlphaBot&) = 0;
         };
 
 public:
         AlphaBot();
         void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_NS);
         void stop();
-        void setStepCallback(StepCallback *_stepcallback)
+        void registerStepCallback(StepCallback *_stepcallback)
         {
                 stepCallback = _stepcallback;
         }

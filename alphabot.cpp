@@ -86,9 +86,6 @@ float AlphaBot::readADC(int ch) {
 }
 
 void AlphaBot::timerEvent() {
-        if (nullptr != stepCallback)
-                stepCallback->step();
-
         // wheel speed
         wheelTimerCounter--;
         if (wheelTimerCounter < 1) {
@@ -103,6 +100,9 @@ void AlphaBot::timerEvent() {
         leftDistance = readADC(ADC_DIST_L);
         rightDistance = readADC(ADC_DIST_R);
         batteryLevel = readADC(ADC_VIN);
+	
+        if (nullptr != stepCallback)
+                stepCallback->step(*this);
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
