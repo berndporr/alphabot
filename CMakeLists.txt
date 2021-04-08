@@ -8,9 +8,10 @@ project(Alphabot_Library LANGUAGES CXX)
 include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 11)
 
-add_compile_options(-Wall -Wconversion -Wextra -pedantic)
+add_compile_options(-Wall)
 
 find_package (Threads)
+find_package (Curses)
 
 set(LIBSRC alphabot.cpp)
 set(LIBINCLUDE alphabot.h)
@@ -51,3 +52,6 @@ target_link_libraries(testIO alphabot_static ncurses)
 
 add_executable (testMotor testMotor.cpp)
 target_link_libraries(testMotor alphabot_static ncurses)
+
+add_executable (obstacleAvoid obstacleAvoid.cpp)
+target_link_libraries(obstacleAvoid alphabot_static ncurses)
