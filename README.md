@@ -23,7 +23,7 @@ systemctl enable pigpiod
 systemctl start pigpiod 
 ```
 
-## Usuage
+## Usage
 
 ### Start/stop
 
@@ -83,9 +83,6 @@ class itself so that one can read the different ADC values.
 ## Demo program
 
 `testIO` is a simple test program which displays the different
-senor readings.
-
-Press `l` to start the left motor, `r` to start the right motor
-and the spacebar to stop them.
+senor readings and you can test the motors.
 
 ESC terminates the program and closes the connection.
