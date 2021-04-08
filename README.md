@@ -18,6 +18,7 @@ which runs as a demon. Install the following packages:
 ```
 apt-get install libpigpiod-if-dev
 apt-get install libpigpiod-if2-1
+apt-get install libncurses-dev
 ```
 and enable and start the `pigpiod` daemon with:
 ```
