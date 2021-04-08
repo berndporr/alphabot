@@ -43,8 +43,8 @@ public:
 		}
 		else
 		{
-			alphabot.setLeftWheelSpeed(l - 0.3 * phi);
-			alphabot.setRightWheelSpeed(r + 0.3 * phi);
+			alphabot.setLeftWheelSpeed(l + 0.2 * phi);
+			alphabot.setRightWheelSpeed(r - 0.2 * phi);
 		}
 		refresh();
 	}
