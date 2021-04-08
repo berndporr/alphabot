@@ -1,12 +1,14 @@
-# alphabot
-C++ class to access the basic functionality of the alphabot:
-https://www.waveshare.com/wiki/AlphaBot
+# alphabot Raspberry PI API
+
+C++ class to control the basic functionality of the Alphabot
+(https://www.waveshare.com/wiki/AlphaBot) with a Raspberry PI:
 
  - PWM motor control
  - Distance sensor readings (digital and analogue)
  - Battery voltage
  - Wheel speed encoders
  - IR sensor readings
+ - 10Hz sampling rate with callback
 
 ## Prerequisites
 
@@ -17,7 +19,7 @@ which runs as a demon. Install the following packages:
 apt-get install libpigpiod-if-dev
 apt-get install libpigpiod-if2-1
 ```
-and enable and start the `pigpiod` with:
+and enable and start the `pigpiod` daemon with:
 ```
 systemctl enable pigpiod
 systemctl start pigpiod 
@@ -25,7 +27,7 @@ systemctl start pigpiod
 
 ## Building
 
-The built system is `cmake` so just type:
+The built system is `cmake`. Just type:
 ```
 cmake .
 make
