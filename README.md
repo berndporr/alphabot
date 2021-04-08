@@ -1,11 +1,14 @@
-# alphabot
-C++ class to access the basic functionality of the alphabot:
-https://www.waveshare.com/wiki/AlphaBot
+# alphabot Raspberry PI API
+
+C++ class to control the basic functionality of the Alphabot
+(https://www.waveshare.com/wiki/AlphaBot) with a Raspberry PI:
 
  - PWM motor control
  - Distance sensor readings (digital and analogue)
  - Battery voltage
  - Wheel speed encoders
+ - IR sensor readings
+ - 10Hz sampling rate with callback
 
 ## Prerequisites
 
@@ -13,14 +16,21 @@ The Raspberry PI hardware is accessed via the
 `pigpiod` which is the version of the `pigpio` library
 which runs as a demon. Install the following packages:
 ```
-apt-get install libpigpio-dev
 apt-get install libpigpiod-if-dev
 apt-get install libpigpiod-if2-1
 ```
-and enable and start the `pigpiod` with:
+and enable and start the `pigpiod` daemon with:
 ```
 systemctl enable pigpiod
 systemctl start pigpiod 
+```
+
+## Building
+
+The built system is `cmake`. Just type:
+```
+cmake .
+make
 ```
 
 ## Usage
@@ -75,6 +85,14 @@ bool getLeftWheelSpinning();
 bool getRightWheelSpinning();
 ```
 
+### Infrared channels / general purpose ADC channels 0-4
+
+```
+float (&getIR())[nIR]
+```
+returns a reference to the whole array of IR sensor readings
+normalised between 0..1.
+
 ### Callback
 
 Whenever a new set of analogue readings is available the callback `step`
@@ -83,7 +101,10 @@ class itself so that one can read the different ADC values.
 
 ## Demo program
 
+![alt tag](testIO.png)
+
 `testIO` is a simple test program which displays the different
 senor readings and you can test the motors.
-
 ESC terminates the program and closes the connection.
+
+`testMotor` ramps up the motor speed and back again.
