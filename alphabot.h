@@ -11,7 +11,6 @@
 #include <sys/time.h>
 
 #define DEFAULT_SAMPLING_INTERVAL_MS 100 // 100ms
-#define WHEEL_TIMER_COUNT 10 // 1s
 
 class AlphaBot
 {
@@ -102,7 +101,6 @@ private:
         int rightWheelActualSpeed = 0;
         int leftWheelCallbackID = 0;
         int rightWheelCallbackID = 0;
-        int wheelTimerCounter = WHEEL_TIMER_COUNT;
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;

@@ -126,14 +126,10 @@ void AlphaBot::worker(AlphaBot* alphabot) {
                 // take into account the conversion time
                 unsigned long t1 = alphabot->us();
 
-                alphabot->wheelTimerCounter--;
-                if (alphabot->wheelTimerCounter < 1) {
-                        alphabot->leftWheelActualSpeed = alphabot->leftWeelCounter;
-                        alphabot->leftWeelCounter = 0;
-                        alphabot->rightWheelActualSpeed = alphabot->rightWheelCounter;
-                        alphabot->rightWheelCounter = 0;
-                        alphabot->wheelTimerCounter = WHEEL_TIMER_COUNT;
-                }
+                alphabot->leftWheelActualSpeed = alphabot->leftWeelCounter;
+                alphabot->leftWeelCounter = 0;
+                alphabot->rightWheelActualSpeed = alphabot->rightWheelCounter;
+                alphabot->rightWheelCounter = 0;
 
                 // ADC
                 alphabot->leftDistance = alphabot->readADC(alphabot->ADC_DIST_L);
