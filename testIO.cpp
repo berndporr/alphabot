@@ -9,7 +9,7 @@ class DisplaySensorCallback : public AlphaBot::StepCallback {
 public:
 	virtual void step(AlphaBot& alphabot) {
 		char tmp[256];
-		sprintf(tmp,"L: %d, R: %d     ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
+		sprintf(tmp,"Coll L: %d, Coll R: %d     ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
                 mvaddstr(1,0,tmp);
                 sprintf(tmp,
 			"L speed = %d, R speed = %d    ",
@@ -34,7 +34,11 @@ int main(int, char **)
         initscr();
         noecho();
         clear();
+	mvaddstr(0,0,"l)eft wheel, r)ight wheel, f)orward, b)ackward, SPACE=stop, ESC=end");
+	refresh();
         alphabot.start();
+	float l = 0;
+	float r = 0;
         while (running)
         {
 		// blocking so that the main program sleeps here
@@ -46,22 +50,48 @@ int main(int, char **)
                         break;
 
                 case 'l':
-			mvaddstr(0, 0,"Setting left speed  ");
+			l = l + 0.1f;
+                        alphabot.setLeftWheelSpeed(l);
+			char tmp1[256];
+			sprintf(tmp1,"Increasing right speed to %f         ",l);
+			mvaddstr(6,0,tmp1);
 			refresh();
-                        alphabot.setLeftWheelSpeed(0.5);
                         break;
 
                 case 'r':
-			mvaddstr(0,0,"Setting right speed  ");
+			r = r + 0.1f;
+                        alphabot.setRightWheelSpeed(r);
+			char tmp2[256];
+			sprintf(tmp2,"Increasing right speed to %f         ",r);
+			mvaddstr(6,0,tmp2);
 			refresh();
-                        alphabot.setRightWheelSpeed(0.5);
+                        break;
+
+		case 'b':
+			mvaddstr(6,0,"Backwards                            ");
+			refresh();
+			l = l - 0.05f;
+			r = r - 0.05f;
+			alphabot.setLeftWheelSpeed(l);
+			alphabot.setRightWheelSpeed(r);
+                        break;
+
+		case 'f':
+			mvaddstr(6,0,"Forwards                             ");
+			refresh();
+			l = l + 0.05f;
+			r = r + 0.05f;
+			alphabot.setLeftWheelSpeed(l);
+			alphabot.setRightWheelSpeed(r);
                         break;
 
                 case ' ':
-			mvaddstr(0,0,"Stopping             ");
+			mvaddstr(6,0,"Stopping                            ");
 			refresh();
-                        alphabot.setLeftWheelSpeed(0);
-                        alphabot.setRightWheelSpeed(0);
+			l = 0;
+			r = 0;
+                        alphabot.setLeftWheelSpeed(l);
+                        alphabot.setRightWheelSpeed(r);
                         break;
 
                 default:

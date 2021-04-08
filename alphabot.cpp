@@ -136,12 +136,12 @@ void AlphaBot::timerEvent() {
                 stepCallback->step(*this);
 }
 
-void AlphaBot::setLeftWheelSpeed(float speed) {
+void AlphaBot::setRightWheelSpeed(float speed) {
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
                 speed = 1;
-        leftWheelSpeed = speed;
+        rightWheelSpeed = speed;
         if (speed < 0) {
                 gpio_write(pi,GPIO_IN3,1);
                 gpio_write(pi,GPIO_IN4,0);
@@ -153,12 +153,12 @@ void AlphaBot::setLeftWheelSpeed(float speed) {
         set_PWM_dutycycle(pi,GPIO_ENB,(int)round(fabs(speed)*max));
 }
 
-void AlphaBot::setRightWheelSpeed(float speed) {
+void AlphaBot::setLeftWheelSpeed(float speed) {
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
                 speed = 1;
-        rightWheelSpeed = speed;
+        leftWheelSpeed = speed;
         if (speed < 0) {
                 gpio_write(pi,GPIO_IN1,0);
                 gpio_write(pi,GPIO_IN2,1);
