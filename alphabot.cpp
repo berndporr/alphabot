@@ -5,7 +5,6 @@
 #include <unistd.h>
 
 
-
 AlphaBot::AlphaBot() {
 	pi = pigpio_start(NULL, NULL);
 	if (pi < 0) {
@@ -52,13 +51,17 @@ void AlphaBot::start(long _samplingInterval) {
 
         // central processing
         samplingInterval = _samplingInterval;
-        CppTimer::start(samplingInterval);
+	mainThread = new std::thread(worker,this);
 }
 
 void AlphaBot::stop() {
+        running = false;
         callback_cancel(leftWheelCallbackID);
         callback_cancel(rightWheelCallbackID);
-        CppTimer::stop();
+        if (nullptr != mainThread) {
+                mainThread->join();
+                mainThread = nullptr;
+        }
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
         pigpio_stop(pi);
@@ -116,24 +119,43 @@ unsigned AlphaBot::readADC(unsigned channel) {
 }
 	
 
-void AlphaBot::timerEvent() {
-        // wheel speed
-        wheelTimerCounter--;
-        if (wheelTimerCounter < 1) {
-                leftWheelActualSpeed = leftWeelCounter;
-                leftWeelCounter = 0;
-                rightWheelActualSpeed = rightWheelCounter;
-                rightWheelCounter = 0;
-                wheelTimerCounter = WHEEL_TIMER_COUNT;
-        }
+void AlphaBot::worker(AlphaBot* alphabot) {
+        alphabot->running = true;
+        bool errorReported = false;
+        while (alphabot->running) {
+                // take into account the conversion time
+                unsigned long t1 = alphabot->us();
 
-        // ADC
-        leftDistance = readADC(ADC_DIST_L);
-        rightDistance = readADC(ADC_DIST_R);
-        batteryLevel = readADC(ADC_VIN);
+                alphabot->wheelTimerCounter--;
+                if (alphabot->wheelTimerCounter < 1) {
+                        alphabot->leftWheelActualSpeed = alphabot->leftWeelCounter;
+                        alphabot->leftWeelCounter = 0;
+                        alphabot->rightWheelActualSpeed = alphabot->rightWheelCounter;
+                        alphabot->rightWheelCounter = 0;
+                        alphabot->wheelTimerCounter = WHEEL_TIMER_COUNT;
+                }
+
+                // ADC
+                alphabot->leftDistance = alphabot->readADC(alphabot->ADC_DIST_L);
+                alphabot->rightDistance = alphabot->readADC(alphabot->ADC_DIST_R);
+                alphabot->batteryLevel = alphabot->readADC(alphabot->ADC_VIN);
 	
-        if (nullptr != stepCallback)
-                stepCallback->step(*this);
+                if (nullptr != alphabot->stepCallback)
+                        alphabot->stepCallback->step(*alphabot);
+
+                unsigned long t2 = alphabot->us();
+                // delay needed minus the time it took to convert it
+                long d = alphabot->samplingInterval * 1000 - (t2 - t1);
+                if (d > 0) {
+                        usleep(d);
+                } else {
+                        // requested sampling interval is too short
+                        if (!errorReported) {
+                                std::cerr << "Sampling rate is too high.";
+                                errorReported = true;
+                        }
+                }
+        }
 }
 
 void AlphaBot::setRightWheelSpeed(float speed) {

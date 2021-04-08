@@ -8,12 +8,12 @@
 #define ALPHABOT_H
 
 #include <thread>
-#include "CppTimer.h"
+#include <sys/time.h>
 
-#define DEFAULT_SAMPLING_INTERVAL_NS (100 * 1000 * 1000) // 100ms
+#define DEFAULT_SAMPLING_INTERVAL_MS 100 // 100ms
 #define WHEEL_TIMER_COUNT 10 // 1s
 
-class AlphaBot : public CppTimer
+class AlphaBot
 {
 
 public:
@@ -25,7 +25,7 @@ public:
 
 public:
         AlphaBot();
-        void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_NS);
+        void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
         void stop();
         void registerStepCallback(StepCallback *_stepcallback)
         {
@@ -78,13 +78,19 @@ private:
         static const unsigned ADCmax = 1023;
         static const unsigned ADCvref = 5;
 
-        virtual void timerEvent();
+        static void worker(AlphaBot*);
 
         virtual void initPWM(int gpio, int pwm_frequency = 50);
 
         static void encoderEvent(int pi, unsigned user_gpio, unsigned level, uint32_t tick, void * userdata);
 
         unsigned readADC(unsigned ch);
+
+        static inline unsigned long us() {
+	        struct timeval tv;
+	        gettimeofday(&tv, NULL);
+	        return tv.tv_sec * 1000000 + tv.tv_usec;
+        }
 
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
@@ -101,6 +107,8 @@ private:
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
 	int pi = -1;
+        bool running = true;
+        std::thread* mainThread = nullptr;
 };
 
 #endif

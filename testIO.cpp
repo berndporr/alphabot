@@ -9,7 +9,7 @@ class DisplaySensorCallback : public AlphaBot::StepCallback {
 public:
 	virtual void step(AlphaBot& alphabot) {
 		char tmp[256];
-		sprintf(tmp,"Coll L: %d, Coll R: %d     ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
+		sprintf(tmp,"Coll L: %d, Coll R: %d    ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
                 mvaddstr(1,0,tmp);
                 sprintf(tmp,
 			"L speed = %d, R speed = %d    ",

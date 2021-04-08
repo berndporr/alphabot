@@ -1,4 +1,5 @@
 #include "alphabot.h"
+#include <unistd.h>
 
 int running = 1;
 

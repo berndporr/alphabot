@@ -12,7 +12,7 @@ add_compile_options(-Wall -Wconversion -Wextra -pedantic)
 
 find_package (Threads)
 
-set(LIBSRC alphabot.cpp CppTimer.cpp)
+set(LIBSRC alphabot.cpp)
 set(LIBINCLUDE alphabot.h)
 
 add_library(alphabot
