@@ -39,8 +39,8 @@ void AlphaBot::start(long _samplingInterval) {
         set_mode(pi,GPIO_COLLISION_R,PI_INPUT);
 
         // wheel speed
-        leftWheelCallbackID = callback_ex(pi, GPIO_SPEED_L, RISING_EDGE, encoderEvent, (void*)this);
-        rightWheelCallbackID = callback_ex(pi, GPIO_SPEED_R, RISING_EDGE, encoderEvent, (void*)this);
+        leftWheelCallbackID = callback_ex(pi, GPIO_SPEED_L, EITHER_EDGE, encoderEvent, (void*)this);
+        rightWheelCallbackID = callback_ex(pi, GPIO_SPEED_R, EITHER_EDGE, encoderEvent, (void*)this);
 
         // ADC
         set_mode(pi,GPIO_ADC_CS,PI_OUTPUT);
@@ -72,7 +72,7 @@ void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void
         if (pi != alphabot->pi) return;
         switch (user_gpio) {
                 case GPIO_SPEED_L:
-                        alphabot->leftWeelCounter++;
+                        alphabot->leftWheelCounter++;
                         break;
                 case GPIO_SPEED_R:
                         alphabot->rightWheelCounter++;
@@ -122,28 +122,41 @@ unsigned AlphaBot::readADC(unsigned channel) {
 void AlphaBot::worker(AlphaBot* alphabot) {
         alphabot->running = true;
         bool errorReported = false;
+        unsigned long t = alphabot->ms();
+        // The Linux timer cannot be used because pigpiod is using it so we
+        // need to resort to an imprecise sampling loop with jitter but
+        // the average sampling rate is constant as the delay in the loop
+        // is generated as an error signal between expected timestamp
+        // and actual timestamp.
         while (alphabot->running) {
-                // take into account the conversion time
-                unsigned long t1 = alphabot->us();
-
-                alphabot->leftWheelActualSpeed = alphabot->leftWeelCounter;
-                alphabot->leftWeelCounter = 0;
-                alphabot->rightWheelActualSpeed = alphabot->rightWheelCounter;
-                alphabot->rightWheelCounter = 0;
-
                 // ADC
                 alphabot->leftDistance = alphabot->readADC(alphabot->ADC_DIST_L);
                 alphabot->rightDistance = alphabot->readADC(alphabot->ADC_DIST_R);
                 alphabot->batteryLevel = alphabot->readADC(alphabot->ADC_VIN);
 	
+                alphabot->spinningCounter--;
+                if (alphabot->spinningCounter < 1) {
+                        alphabot->leftIsSpinning = alphabot->leftWheelCounter > 0;
+                        alphabot->rightIsSpinning = alphabot->rightWheelCounter > 0;
+                        alphabot->rightWheelCounter = 0;
+                        alphabot->leftWheelCounter = 0;
+                        alphabot->spinningCounter = 500 / alphabot->samplingInterval;
+                        std::cerr << alphabot->spinningCounter;
+                }
+
+                // callback
                 if (nullptr != alphabot->stepCallback)
                         alphabot->stepCallback->step(*alphabot);
 
-                unsigned long t2 = alphabot->us();
-                // delay needed minus the time it took to convert it
-                long d = alphabot->samplingInterval * 1000 - (t2 - t1);
+                // dynamic delay to achieve the sampling rate
+                // timestamp we want to be
+                t += alphabot->samplingInterval;
+                // timestamp we are actually
+                unsigned long actual = alphabot->ms();
+                // delay needed to end up at the current t
+                long d = t - actual;
                 if (d > 0) {
-                        usleep(d);
+                        usleep(d*1000);
                 } else {
                         // requested sampling interval is too short
                         if (!errorReported) {

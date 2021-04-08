@@ -55,7 +55,7 @@ bool getCollisionLeft();
 bool getCollisionRight();
 ```
 
-The alalogue readings from the sensors from 0..1 can be read with:
+The analogue readings from the sensors from 0..1 can be read with:
 ```
 float getLeftDistance()
 float getRightDistance()
@@ -68,10 +68,11 @@ in volt.
 
 ### Speed encoders
 
-These are horrible mechanical wheels and their signals are unreliable:
+These are terrible encoders and really only reliable to detect if the
+wheel is spinning at all or not. Updates every 1/2 sec.
 ```
-int getActualLeftWheelSpeed()
-int getActualRightWheelSpeed()
+bool getLeftWheelSpinning();
+bool getRightWheelSpinning();
 ```
 
 ### Callback

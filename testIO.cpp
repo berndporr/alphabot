@@ -12,9 +12,9 @@ public:
 		sprintf(tmp,"Coll L: %d, Coll R: %d    ",alphabot.getCollisionLeft(),alphabot.getCollisionRight());
                 mvaddstr(1,0,tmp);
                 sprintf(tmp,
-			"L speed = %d, R speed = %d    ",
-			alphabot.getActualLeftWheelSpeed(),
-			alphabot.getActualRightWheelSpeed());
+			"L spinning = %d, R spinning = %d    ",
+			alphabot.getLeftWheelSpinning(),
+			alphabot.getRightWheelSpinning());
                 mvaddstr(2,0,tmp);
                 sprintf(tmp,
 			"ADC_L = %f, ADC_R = %f, Power = %f    ",

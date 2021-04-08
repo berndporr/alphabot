@@ -35,15 +35,20 @@ public:
         void setLeftWheelSpeed(float speed);
         void setRightWheelSpeed(float speed);
 
-        int getActualLeftWheelSpeed() { return leftWheelActualSpeed; }
-        int getActualRightWheelSpeed() { return rightWheelActualSpeed; }
-        float getLeftDistance() { return (float)leftDistance / ADCmax; }
-        float getRightDistance() { return (float)rightDistance / ADCmax; }
+        // returns true if the wheel is spining
+        bool getLeftWheelSpinning() { return leftIsSpinning; }
+        bool getRightWheelSpinning() { return rightIsSpinning; }
+
+        // returns the battery level in Volt
         float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref; }
 
         // get collision sensors
         bool getCollisionLeft();
         bool getCollisionRight();
+
+        // returns the distances
+        float getLeftDistance() { return (float)leftDistance / ADCmax; }
+        float getRightDistance() { return (float)rightDistance / ADCmax; }
 
 private:
         static const int GPIO_ENA = 6;
@@ -85,22 +90,23 @@ private:
 
         unsigned readADC(unsigned ch);
 
-        static inline unsigned long us() {
+        static inline unsigned long ms() {
 	        struct timeval tv;
 	        gettimeofday(&tv, NULL);
-	        return tv.tv_sec * 1000000 + tv.tv_usec;
+	        return tv.tv_sec * 1000 + tv.tv_usec / 1000;
         }
 
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;
         float rightWheelSpeed = 0;
-        int leftWeelCounter = 0;
+        int spinningCounter = 1;
+        int leftWheelCounter = 0;
         int rightWheelCounter = 0;
-        int leftWheelActualSpeed = 0;
-        int rightWheelActualSpeed = 0;
         int leftWheelCallbackID = 0;
         int rightWheelCallbackID = 0;
+        bool leftIsSpinning = false;
+        bool rightIsSpinning = false;
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
