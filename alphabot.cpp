@@ -141,7 +141,6 @@ void AlphaBot::worker(AlphaBot* alphabot) {
                         alphabot->rightWheelCounter = 0;
                         alphabot->leftWheelCounter = 0;
                         alphabot->spinningCounter = 500 / alphabot->samplingInterval;
-                        std::cerr << alphabot->spinningCounter;
                 }
 
                 // callback
