@@ -59,8 +59,8 @@ private:
         static const int GPIO_COLLISION_R = 16;
 
         // Speed sensors
-        static const int GPIO_SPEED_L = 8;
-        static const int GPIO_SPEED_R = 7;
+        static const int GPIO_SPEED_L = 7;
+        static const int GPIO_SPEED_R = 8;
 
         // TLC1543
         static const int GPIO_ADC_IOCLK = 25;
