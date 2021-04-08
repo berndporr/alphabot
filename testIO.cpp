@@ -68,30 +68,30 @@ int main(int, char **)
                         break;
 
 		case 'b':
-			mvaddstr(6,0,"Backwards                            ");
-			refresh();
 			l = l - 0.05f;
 			r = r - 0.05f;
 			alphabot.setLeftWheelSpeed(l);
 			alphabot.setRightWheelSpeed(r);
+			mvaddstr(6,0,"Backwards                            ");
+			refresh();
                         break;
 
 		case 'f':
-			mvaddstr(6,0,"Forwards                             ");
-			refresh();
 			l = l + 0.05f;
 			r = r + 0.05f;
 			alphabot.setLeftWheelSpeed(l);
 			alphabot.setRightWheelSpeed(r);
+			mvaddstr(6,0,"Forwards                             ");
+			refresh();
                         break;
 
                 case ' ':
-			mvaddstr(6,0,"Stopping                            ");
-			refresh();
 			l = 0;
 			r = 0;
                         alphabot.setLeftWheelSpeed(l);
                         alphabot.setRightWheelSpeed(r);
+			mvaddstr(6,0,"Stopping                            ");
+			refresh();
                         break;
 
                 default:

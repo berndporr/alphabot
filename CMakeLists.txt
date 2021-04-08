@@ -48,3 +48,6 @@ install(TARGETS alphabot_static EXPORT alphabot_static-targets
 
 add_executable (testIO testIO.cpp)
 target_link_libraries(testIO alphabot_static ncurses)
+
+add_executable (testMotor testMotor.cpp)
+target_link_libraries(testMotor alphabot_static ncurses)
