@@ -5,15 +5,6 @@
 #include <unistd.h>
 
 
-AlphaBot::AlphaBot() {
-	pi = pigpio_start(NULL, NULL);
-	if (pi < 0) {
-		std::string msg = "Cannot connect to the pigpio daemon.\n";
-		std::cerr << msg;
-		exit(1);
-	}
-}
-
 void AlphaBot::initPWM(int gpio, int pwm_frequency) {
         set_PWM_frequency(pi,gpio,pwm_frequency);
         int rr = get_PWM_real_range(pi, gpio);
@@ -22,6 +13,13 @@ void AlphaBot::initPWM(int gpio, int pwm_frequency) {
 }
 
 void AlphaBot::start(long _samplingInterval) {
+	pi = pigpio_start(NULL, NULL);
+	if (pi < 0) {
+		std::string msg = "Cannot connect to the pigpio daemon.\n";
+		std::cerr << msg;
+		exit(1);
+	}
+
         // motor control
         set_mode(pi,GPIO_ENA,PI_OUTPUT);
         set_mode(pi,GPIO_ENB,PI_OUTPUT);
@@ -64,7 +62,9 @@ void AlphaBot::stop() {
         }
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
+        if (pi < 0) return;
         pigpio_stop(pi);
+        pi = -1;
 }
 
 void AlphaBot::encoderEvent(int pi, unsigned user_gpio, unsigned, uint32_t, void * userdata) {
@@ -129,11 +129,19 @@ void AlphaBot::worker(AlphaBot* alphabot) {
         // is generated as an error signal between expected timestamp
         // and actual timestamp.
         while (alphabot->running) {
-                // ADC
+                // distance readings
                 alphabot->leftDistance = alphabot->readADC(alphabot->ADC_DIST_L);
                 alphabot->rightDistance = alphabot->readADC(alphabot->ADC_DIST_R);
+
+                // battery
                 alphabot->batteryLevel = alphabot->readADC(alphabot->ADC_VIN);
+
+                // IR sensors
+                for(unsigned i=0;i<(alphabot->nIR);i++) {
+                        alphabot->ir[i] = (float)(alphabot->readADC(i)) / alphabot->ADCmax;
+                }
 	
+                // wheel encoders
                 alphabot->spinningCounter--;
                 if (alphabot->spinningCounter < 1) {
                         alphabot->leftIsSpinning = alphabot->leftWheelCounter > 0;
@@ -147,13 +155,13 @@ void AlphaBot::worker(AlphaBot* alphabot) {
                 if (nullptr != alphabot->stepCallback)
                         alphabot->stepCallback->step(*alphabot);
 
-                // dynamic delay to achieve the sampling rate
-                // timestamp we want to be
+                // calc dynamic delay to achieve an average sampling rate
                 t += alphabot->samplingInterval;
                 // timestamp we are actually
                 unsigned long actual = alphabot->ms();
                 // delay needed to end up at the current t
                 long d = t - actual;
+                // std::cerr << d << "           ";
                 if (d > 0) {
                         usleep(d*1000);
                 } else {

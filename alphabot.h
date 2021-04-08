@@ -23,12 +23,25 @@ public:
         };
 
 public:
-        AlphaBot();
+        // starts the communication with the pigpiod
         void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
+
+        // stops the communication with the pigpiod
         void stop();
+
+        ~AlphaBot() {
+                stop();
+        }
+
+        // registers callback which signals new data
         void registerStepCallback(StepCallback *_stepcallback)
         {
                 stepCallback = _stepcallback;
+        }
+
+        // gets the id to talk to the pigpiod
+        int getPiGPIOid() {
+                return pi;
         }
 
         // set motor speed
@@ -49,6 +62,14 @@ public:
         // returns the distances
         float getLeftDistance() { return (float)leftDistance / ADCmax; }
         float getRightDistance() { return (float)rightDistance / ADCmax; }
+
+        // number of IR channels
+        static const unsigned nIR = 5;
+
+        // returns the IR channels
+        float (&getIR())[nIR] {
+                return ir;
+        }
 
 private:
         static const int GPIO_ENA = 6;
@@ -110,6 +131,7 @@ private:
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
+        float ir[nIR] = {0,0,0,0,0};
 	int pi = -1;
         bool running = true;
         std::thread* mainThread = nullptr;
