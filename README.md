@@ -12,18 +12,16 @@ C++ class to control the basic functionality of the Alphabot
 
 ## Prerequisites
 
+### pigpio
 The Raspberry PI hardware is accessed via the
-`pigpiod` which is the version of the `pigpio` library
-which runs as a demon. Install the following packages:
+`pigpio` library. Install the following packages:
 ```
-apt-get install libpigpiod-if-dev
-apt-get install libpigpiod-if2-1
+apt-get install libpigpio-dev
 ```
-and enable and start the `pigpiod` daemon with:
-```
-systemctl enable pigpiod
-systemctl start pigpiod 
-```
+
+### Timer library
+Install the timer library from:
+https://github.com/berndporr/cppTimer
 
 ## Building
 

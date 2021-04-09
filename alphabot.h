@@ -9,10 +9,11 @@
 
 #include <thread>
 #include <sys/time.h>
+#include <CppTimer.h>
 
 #define DEFAULT_SAMPLING_INTERVAL_MS 100 // 100ms
 
-class AlphaBot
+class AlphaBot : public CppTimer
 {
 
 public:
@@ -37,11 +38,6 @@ public:
         void registerStepCallback(StepCallback *_stepcallback)
         {
                 stepCallback = _stepcallback;
-        }
-
-        // gets the id to talk to the pigpiod
-        int getPiGPIOid() {
-                return pi;
         }
 
         // set motor speed
@@ -103,11 +99,12 @@ private:
         static const unsigned ADCmax = 1023;
         static const unsigned ADCvref = 5;
 
-        static void worker(AlphaBot*);
+        virtual void timerEvent();
 
         virtual void initPWM(int gpio, int pwm_frequency = 50);
 
-        static void encoderEvent(int pi, unsigned user_gpio, unsigned level, uint32_t tick, void * userdata);
+        static void encoderEventL(int user_gpio, int level, uint32_t tick, void *userdata);
+        static void encoderEventR(int user_gpio, int level, uint32_t tick, void *userdata);
 
         unsigned readADC(unsigned ch);
 
@@ -132,7 +129,6 @@ private:
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
         float ir[nIR] = {0,0,0,0,0};
-	int pi = -1;
         bool running = true;
         std::thread* mainThread = nullptr;
 };
