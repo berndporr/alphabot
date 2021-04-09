@@ -14,7 +14,7 @@ C++ class to control the basic functionality of the Alphabot
 
 ### pigpio
 The Raspberry PI hardware is accessed via the
-`pigpio` library. Install the following packages:
+`pigpio` library. Install its package:
 ```
 apt-get install libpigpio-dev
 ```
