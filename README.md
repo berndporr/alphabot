@@ -1,4 +1,6 @@
-# alphabot Raspberry PI API
+# C++ Alphabot API for the Raspberry PI
+
+![alt tag](robot.jpg)
 
 C++ class to control the basic functionality of the Alphabot
 (https://www.waveshare.com/wiki/AlphaBot) with a Raspberry PI:
@@ -6,11 +8,9 @@ C++ class to control the basic functionality of the Alphabot
  - PWM motor control
  - Distance sensor readings (digital and analogue)
  - Battery voltage
- - Wheel speed encoders
+ - Wheel speed encoders (rotating flags)
  - IR sensor readings
  - 10Hz sampling rate with callback
-
-![alt tag](robot.jpg)
 
 ## Prerequisites
 
@@ -24,6 +24,14 @@ apt-get install libpigpio-dev
 ### Timer library
 Install the timer library from:
 https://github.com/berndporr/cppTimer
+
+### ncurses
+The demo programs below display the sensor
+readings with the ncurses library. Install
+it with
+```
+apt-get install libncurses-dev
+```
 
 ## Building
 
@@ -99,12 +107,18 @@ Whenever a new set of analogue readings is available the callback `step`
 in `StepCallback` is called. It contains the reference to the Alphabot
 class itself so that one can read the different ADC values.
 
-## Demo program
+## Demo programs
 
 ![alt tag](testIO.png)
 
 `testIO` is a simple test program which displays the different
-senor readings and you can test the motors.
-ESC terminates the program and closes the connection.
+senor readings and you can test the motors. It also shows
+how the callback is used to display the sensor readings.
 
 `testMotor` ramps up the motor speed and back again.
+
+`obstacleAvoid.cpp` implements a Braitenberg vehicle
+and it has an emergency stop if the digital readings from
+the collision sensors are triggered. This is an
+instructional example and needs to be tweaked. The
+fun begins here! :)
