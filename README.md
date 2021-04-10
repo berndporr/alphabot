@@ -10,6 +10,8 @@ C++ class to control the basic functionality of the Alphabot
  - IR sensor readings
  - 10Hz sampling rate with callback
 
+![alt tag](robot.jpg)
+
 ## Prerequisites
 
 ### pigpio
