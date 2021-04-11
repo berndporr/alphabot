@@ -38,7 +38,7 @@ public:
         /**
          * Starts the communication with the robot.
          * 
-         * @param _samplingInterval Sampling interval for the ADC data
+         * @param _samplingInterval Sampling interval in ms for the ADC data
          */
         void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
 
