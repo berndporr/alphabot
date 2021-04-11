@@ -21,10 +21,6 @@ The Raspberry PI hardware is accessed via the
 apt-get install libpigpio-dev
 ```
 
-### Timer library
-Install the timer library from:
-https://github.com/berndporr/cppTimer
-
 ### ncurses
 The demo programs below display the sensor
 readings with the ncurses library. Install

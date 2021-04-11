@@ -13,6 +13,15 @@ add_compile_options(-Wall)
 find_package (Threads)
 find_package (Curses)
 
+include(FetchContent)
+
+FetchContent_Declare(
+        cpptimer
+        GIT_REPOSITORY https://github.com/berndporr/cppTimer
+        GIT_TAG        1.1.1
+)
+FetchContent_MakeAvailable(cpptimer)
+
 set(LIBSRC alphabot.cpp)
 set(LIBINCLUDE alphabot.h)
 
@@ -48,10 +57,10 @@ install(TARGETS alphabot_static EXPORT alphabot_static-targets
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 add_executable (testIO testIO.cpp)
-target_link_libraries(testIO alphabot_static ncurses)
+target_link_libraries(testIO alphabot_static ncurses rt)
 
 add_executable (testMotor testMotor.cpp)
-target_link_libraries(testMotor alphabot_static ncurses)
+target_link_libraries(testMotor alphabot_static ncurses rt)
 
 add_executable (obstacleAvoid obstacleAvoid.cpp)
-target_link_libraries(obstacleAvoid alphabot_static ncurses)
+target_link_libraries(obstacleAvoid alphabot_static ncurses rt)
