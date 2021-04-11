@@ -3,7 +3,6 @@
  * Apache License 2.0
  **/
 
-
 #ifndef ALPHABOT_H
 #define ALPHABOT_H
 
@@ -11,59 +10,131 @@
 #include <sys/time.h>
 #include <CppTimer.h>
 
-#define DEFAULT_SAMPLING_INTERVAL_MS 100 // 100ms
+#define DEFAULT_SAMPLING_INTERVAL_MS 100 // ms
 
+/**
+ * Alphabot class which communicates with the Alphabot hardware
+ */
 class AlphaBot : public CppTimer
 {
 
 public:
+        /**
+        * Callback interface which is called at the specified sampling
+        * rate. The method step needs to be implemented.
+        */
         class StepCallback
         {
         public:
-                virtual void step(AlphaBot&) = 0;
+                /**
+                * Called at the specified sampling rate with a reference
+                * to the Alphabot instance which has all the getters for
+                * the data and setters for the motor control.
+                */
+                virtual void step(AlphaBot &) = 0;
         };
 
 public:
-        // starts the communication with the pigpiod
+        /**
+         * Starts the communication with the robot.
+         * 
+         * @param _samplingInterval Sampling interval for the ADC data
+         */
         void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
 
-        // stops the communication with the pigpiod
+        /**
+         * Stops the communication with the Alphabot
+         */
         void stop();
 
-        ~AlphaBot() {
+        /**
+         * Destroys the Alpha Bot object and stops any communcation
+         */
+        ~AlphaBot()
+        {
                 stop();
         }
 
-        // registers callback which signals new data
+        /** 
+         * registers callback which signals new data
+         * @param _stepcallback A pointer to the callback interface
+         **/
         void registerStepCallback(StepCallback *_stepcallback)
         {
                 stepCallback = _stepcallback;
         }
 
-        // set motor speed
+        /**
+         * Set the Left Wheel Speed
+         * @param speed between -1 and +1
+         */
         void setLeftWheelSpeed(float speed);
+
+        /**
+         * Set the Right Wheel Speed
+         * @param speed between -1 and +1
+         */
         void setRightWheelSpeed(float speed);
 
-        // returns true if the wheel is spining
+        /**
+         * Info if the left wheel is spinning.
+         * @return true Wheel is spinning
+         * @return false While is not spinning
+         */
         bool getLeftWheelSpinning() { return leftIsSpinning; }
+
+        /**
+         * Info if the right wheel is spinning.
+         * @return true Wheel is spinning
+         * @return false While is not spinning
+         */
         bool getRightWheelSpinning() { return rightIsSpinning; }
 
-        // returns the battery level in Volt
+        /**
+         * Get the Battery Level
+         * @return float Battery level in Volt
+         */
         float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref; }
 
-        // get collision sensors
+        /**
+         * Get the Collision Left (digital signal from the distance sensor)
+         * @return true Obstacle detected
+         * @return false No Obstacle
+         */
         bool getCollisionLeft();
+
+        /**
+         * Get the Collision Right (digital signal from the distance sensor)
+         * @return true Obstacle detected
+         * @return false No Obstacle
+         */
         bool getCollisionRight();
 
-        // returns the distances
+        /**
+         * Get the Left Distance
+         * @return float Value between 0 and 1 as relative distance.
+         */
         float getLeftDistance() { return (float)leftDistance / ADCmax; }
+
+        /**
+         * Get the Right Distance
+         * @return float Value between 0 and 1 as relative distance.
+         */
         float getRightDistance() { return (float)rightDistance / ADCmax; }
 
-        // number of IR channels
+        /**
+         * Number of IR channels or anagloue input channels at the rear
+         * of the robot.
+         */
         static const unsigned nIR = 5;
 
-        // returns the IR channels
-        float (&getIR())[nIR] {
+        /**
+         * Returns the IR channels as a reference to an array with
+         * length nIR. This allows using C+11 style loops.
+         * @return Reference to a const array with the 5 IR readings (0..1)
+         */
+        inline const float (&getIR())[nIR]
+        {
                 return ir;
         }
 
@@ -108,12 +179,6 @@ private:
 
         unsigned readADC(unsigned ch);
 
-        static inline unsigned long ms() {
-	        struct timeval tv;
-	        gettimeofday(&tv, NULL);
-	        return tv.tv_sec * 1000 + tv.tv_usec / 1000;
-        }
-
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;
@@ -128,9 +193,9 @@ private:
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
-        float ir[nIR] = {0,0,0,0,0};
+        float ir[nIR] = {0, 0, 0, 0, 0};
         bool running = true;
-        std::thread* mainThread = nullptr;
+        std::thread *mainThread = nullptr;
 };
 
 #endif
