@@ -14,6 +14,16 @@ C++ class to control the basic functionality of the Alphabot
 
 ## Prerequisites
 
+### CppTimer
+
+Clone it and install from https://github.com/berndporr/cppTimer
+with:
+```
+cmake .
+make
+sudo install
+```
+
 ### pigpio
 The Raspberry PI hardware is accessed via the
 `pigpio` library. Install its package:
@@ -35,6 +45,7 @@ The built system is `cmake`. Just type:
 ```
 cmake .
 make
+sudo make install
 ```
 
 ## Usage

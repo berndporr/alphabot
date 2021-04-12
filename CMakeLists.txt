@@ -13,20 +13,6 @@ add_compile_options(-Wall)
 find_package (Threads)
 find_package (Curses)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        cpptimer
-        GIT_REPOSITORY https://github.com/berndporr/cppTimer
-)
-
-if(NOT cpptimer_POPULATED)
-  FetchContent_Populate(cpptimer)
-  add_subdirectory(${cpptimer_SOURCE_DIR} ${cpptimer_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
-set(cpptimer_CMAKE_SKIP_INSTALL_RULES TRUE)
-
 set(LIBSRC alphabot.cpp)
 set(LIBINCLUDE alphabot.h)
 
