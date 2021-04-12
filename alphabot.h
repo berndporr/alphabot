@@ -195,7 +195,6 @@ private:
         unsigned batteryLevel = 0;
         float ir[nIR] = {0, 0, 0, 0, 0};
         bool running = true;
-        std::thread *mainThread = nullptr;
 };
 
 #endif
