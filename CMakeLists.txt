@@ -17,12 +17,12 @@ set(LIBSRC alphabot.cpp)
 set(LIBINCLUDE alphabot.h)
 
 add_library(alphabot
-  SHARED
+  STATIC
   ${LIBSRC}
   )
 
 set_target_properties(alphabot PROPERTIES
-  SOVERSION 1
+  POSITION_INDEPENDENT_CODE TRUE
   PUBLIC_HEADER "${LIBINCLUDE}")
 
 target_link_libraries(alphabot ${CMAKE_THREAD_LIBS_INIT} pigpio rt cpptimer)
@@ -32,26 +32,11 @@ install(TARGETS alphabot EXPORT alphabot-targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-add_library(alphabot_static
-  STATIC
-  ${LIBSRC}
-  )
-
-set_target_properties(alphabot_static PROPERTIES
-  PUBLIC_HEADER "${LIBINCLUDE}")
-
-target_link_libraries(alphabot_static ${CMAKE_THREAD_LIBS_INIT} pigpio rt cpptimer)
-
-install(TARGETS alphabot_static EXPORT alphabot_static-targets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
 add_executable (testIO testIO.cpp)
-target_link_libraries(testIO alphabot_static ncurses rt)
+target_link_libraries(testIO alphabot ncurses rt)
 
 add_executable (testMotor testMotor.cpp)
-target_link_libraries(testMotor alphabot_static ncurses rt)
+target_link_libraries(testMotor alphabot ncurses rt)
 
 add_executable (obstacleAvoid obstacleAvoid.cpp)
-target_link_libraries(obstacleAvoid alphabot_static ncurses rt)
+target_link_libraries(obstacleAvoid alphabot ncurses rt)
