@@ -142,6 +142,9 @@ private:
         static const int GPIO_MOTORL = 27;
         static const int GPIO_MOTORR = 22;
 
+	const float motor_rest_pulseduration = 1.5/20;
+	const float speed2pwm = 0.1/20;
+
         // Digital collision sensors
         static const int GPIO_COLLISION_L = 19;
         static const int GPIO_COLLISION_R = 16;
@@ -168,7 +171,7 @@ private:
 
         virtual void timerEvent();
 
-        virtual void initPWM(int gpio, int pwm_frequency = 50);
+        virtual void initPWM(int gpio);
 
         static void encoderEventL(int user_gpio, int level, uint32_t tick, void *userdata);
         static void encoderEventR(int user_gpio, int level, uint32_t tick, void *userdata);

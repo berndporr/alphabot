@@ -45,6 +45,7 @@ int main(int, char **)
 	alphabot.start();
 	float l = 0;
 	float r = 0;
+	char tmp[256];
 	while (running)
 	{
 		// blocking so that the main program sleeps here
@@ -58,18 +59,16 @@ int main(int, char **)
 		case 'l':
 			l = l + 0.1f;
 			alphabot.setLeftWheelSpeed(l);
-			char tmp1[256];
-			sprintf(tmp1, "Increasing right speed to %f         ", l);
-			mvaddstr(6, 0, tmp1);
+			sprintf(tmp, "Increasing right speed to %f         ", l);
+			mvaddstr(6, 0, tmp);
 			refresh();
 			break;
 
 		case 'r':
 			r = r + 0.1f;
 			alphabot.setRightWheelSpeed(r);
-			char tmp2[256];
-			sprintf(tmp2, "Increasing right speed to %f         ", r);
-			mvaddstr(6, 0, tmp2);
+			sprintf(tmp, "Increasing right speed to %f         ", r);
+			mvaddstr(6, 0, tmp);
 			refresh();
 			break;
 
@@ -78,7 +77,8 @@ int main(int, char **)
 			r = r - 0.05f;
 			alphabot.setLeftWheelSpeed(l);
 			alphabot.setRightWheelSpeed(r);
-			mvaddstr(6, 0, "Backwards                            ");
+			sprintf(tmp,"Backwards       l=%f, r=%f                     ",l,r);
+			mvaddstr(6, 0, tmp);
 			refresh();
 			break;
 
@@ -87,7 +87,8 @@ int main(int, char **)
 			r = r + 0.05f;
 			alphabot.setLeftWheelSpeed(l);
 			alphabot.setRightWheelSpeed(r);
-			mvaddstr(6, 0, "Forwards                             ");
+			sprintf(tmp,"Forwards       l=%f, r=%f                     ",l,r);
+			mvaddstr(6, 0, tmp);
 			refresh();
 			break;
 

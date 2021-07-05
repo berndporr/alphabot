@@ -5,8 +5,8 @@
 #include <unistd.h>
 
 
-void AlphaBot::initPWM(int gpio, int pwm_frequency) {
-        gpioSetPWMfrequency(gpio,pwm_frequency);
+void AlphaBot::initPWM(int gpio) {
+        gpioSetPWMfrequency(gpio,50);
         int rr = gpioGetPWMrealRange(gpio);
         if ( ( rr > 255) && (rr < 20000) ) gpioSetPWMrange(gpio, rr);
         setLeftWheelSpeed(0);
@@ -24,8 +24,8 @@ void AlphaBot::start(long _samplingInterval) {
 		throw msg;
 	}
 
-        initPWM(GPIO_MOTORL, 50);
-        initPWM(GPIO_MOTORR, 50);
+        initPWM(GPIO_MOTORL);
+        initPWM(GPIO_MOTORR);
 
         // collision sensor
         gpioSetMode(GPIO_COLLISION_L,PI_INPUT);
@@ -159,9 +159,8 @@ void AlphaBot::setRightWheelSpeed(float speed) {
                 speed = 1;
         rightWheelSpeed = speed;
         float max = (float)gpioGetPWMrange(GPIO_MOTORR);
-	float rest = 1.5/20;
-	speed = speed * rest /10;
-        gpioPWM(GPIO_MOTORR,(int)round((rest+speed)*max));
+	speed = speed * speed2pwm;
+        gpioPWM(GPIO_MOTORR,(int)round((motor_rest_pulseduration+speed)*max));
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
@@ -171,9 +170,8 @@ void AlphaBot::setLeftWheelSpeed(float speed) {
                 speed = 1;
         leftWheelSpeed = speed;
         float max = (float)gpioGetPWMrange(GPIO_MOTORL);
-	float rest = 1.5/20;
-	speed = speed * rest /10;	
-        gpioPWM(GPIO_MOTORL,(int)round((rest+speed)*max));
+	speed = speed * speed2pwm;	
+        gpioPWM(GPIO_MOTORL,(int)round((motor_rest_pulseduration+speed)*max));
 }
 
 
