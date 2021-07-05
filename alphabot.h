@@ -139,12 +139,8 @@ public:
         }
 
 private:
-        static const int GPIO_ENA = 6;
-        static const int GPIO_ENB = 26;
-        static const int GPIO_IN1 = 12;
-        static const int GPIO_IN2 = 13;
-        static const int GPIO_IN3 = 20;
-        static const int GPIO_IN4 = 21;
+        static const int GPIO_MOTORL = 27;
+        static const int GPIO_MOTORR = 22;
 
         // Digital collision sensors
         static const int GPIO_COLLISION_L = 19;

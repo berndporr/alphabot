@@ -9,7 +9,8 @@ void AlphaBot::initPWM(int gpio, int pwm_frequency) {
         gpioSetPWMfrequency(gpio,pwm_frequency);
         int rr = gpioGetPWMrealRange(gpio);
         if ( ( rr > 255) && (rr < 20000) ) gpioSetPWMrange(gpio, rr);
-        gpioPWM(gpio,0);
+        setLeftWheelSpeed(0);
+        setRightWheelSpeed(0);
 }
 
 void AlphaBot::start(long _samplingInterval) {
@@ -23,17 +24,8 @@ void AlphaBot::start(long _samplingInterval) {
 		throw msg;
 	}
 
-        // motor control
-        gpioSetMode(GPIO_ENA,PI_OUTPUT);
-        gpioSetMode(GPIO_ENB,PI_OUTPUT);
-        gpioSetMode(GPIO_IN1,PI_OUTPUT);
-        gpioSetMode(GPIO_IN1,PI_OUTPUT);
-        gpioSetMode(GPIO_IN2,PI_OUTPUT);
-        gpioSetMode(GPIO_IN3,PI_OUTPUT);
-        gpioSetMode(GPIO_IN4,PI_OUTPUT);
-
-        initPWM(GPIO_ENA);
-        initPWM(GPIO_ENB);
+        initPWM(GPIO_MOTORL, 50);
+        initPWM(GPIO_MOTORR, 50);
 
         // collision sensor
         gpioSetMode(GPIO_COLLISION_L,PI_INPUT);
@@ -165,15 +157,10 @@ void AlphaBot::setRightWheelSpeed(float speed) {
         if (speed > 1)
                 speed = 1;
         rightWheelSpeed = speed;
-        if (speed < 0) {
-                gpioWrite(GPIO_IN3,1);
-                gpioWrite(GPIO_IN4,0);
-        } else {
-                gpioWrite(GPIO_IN3,0);
-                gpioWrite(GPIO_IN4,1);
-        }
-        float max = (float)gpioGetPWMrange(GPIO_ENB);
-        gpioPWM(GPIO_ENB,(int)round(fabs(speed)*max));
+        float max = (float)gpioGetPWMrange(GPIO_MOTORR);
+	float rest = 1.5/20;
+	speed = speed * rest /10;
+        gpioPWM(GPIO_MOTORR,(int)round((rest+speed)*max));
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
@@ -182,15 +169,10 @@ void AlphaBot::setLeftWheelSpeed(float speed) {
         if (speed > 1)
                 speed = 1;
         leftWheelSpeed = speed;
-        if (speed < 0) {
-                gpioWrite(GPIO_IN1,0);
-                gpioWrite(GPIO_IN2,1);
-        } else {
-                gpioWrite(GPIO_IN1,1);
-                gpioWrite(GPIO_IN2,0);
-        }
-        float max = (float)gpioGetPWMrange(GPIO_ENA);
-        gpioPWM(GPIO_ENA,(int)round(fabs(speed)*max));
+        float max = (float)gpioGetPWMrange(GPIO_MOTORL);
+	float rest = 1.5/20;
+	speed = speed * rest /10;	
+        gpioPWM(GPIO_MOTORL,(int)round((rest+speed)*max));
 }
 
 
