@@ -152,6 +152,7 @@ void AlphaBot::timerEvent() {
 }
 
 void AlphaBot::setRightWheelSpeed(float speed) {
+	speed = -speed;
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
