@@ -2,17 +2,20 @@
 
 ![alt tag](robot.jpg)
 
-C++ class to control the basic functionality of the Alphabot
+C++ class to control the basic functionality of a customised Alphabot
 (https://www.waveshare.com/wiki/AlphaBot) with a Raspberry PI:
 
- - PWM motor control
+ - Motor control (using the Parallax Continuous Rotation Servo)
  - Distance sensor readings (digital and analogue)
  - Battery voltage
- - Wheel speed encoders (rotating flags)
  - IR sensor readings
  - 10Hz sampling rate with callback
 
 ## Prerequisites
+
+### Parallax Continuous Rotation Servos
+
+Throw the original DC motors in the bin and fit the [Parallax Continuous Rotation Servo](https://www.parallax.com/product/parallax-continuous-rotation-servo/) with 90deg brackets. Plug them into the servo ports S1 and S2.
 
 ### CppTimer
 
@@ -92,15 +95,6 @@ float getRightDistance()
 
 The function `getBatteryLevel()` provides the voltage of the battery
 in volt.
-
-### Speed encoders
-
-These are terrible encoders and really only reliable to detect if the
-wheel is spinning at all or not. Updates every 1/2 sec.
-```
-bool getLeftWheelSpinning();
-bool getRightWheelSpinning();
-```
 
 ### Infrared channels / general purpose ADC channels 0-4
 

@@ -16,11 +16,6 @@ public:
 		sprintf(tmp, "Coll L = %d, Coll R = %d       ", alphabot.getCollisionLeft(), alphabot.getCollisionRight());
 		mvaddstr(1, 0, tmp);
 		sprintf(tmp,
-				"Spinning L = %d, Spinning R = %d    ",
-				alphabot.getLeftWheelSpinning(),
-				alphabot.getRightWheelSpinning());
-		mvaddstr(2, 0, tmp);
-		sprintf(tmp,
 				"Dist L = %1.4f, Dist R = %1.4f, Power = %1.1f Volt    ",
 				alphabot.getLeftDistance(),
 				alphabot.getRightDistance(),

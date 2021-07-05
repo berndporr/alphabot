@@ -77,20 +77,6 @@ public:
         void setRightWheelSpeed(float speed);
 
         /**
-         * Info if the left wheel is spinning.
-         * @return true Wheel is spinning
-         * @return false While is not spinning
-         */
-        bool getLeftWheelSpinning() { return leftIsSpinning; }
-
-        /**
-         * Info if the right wheel is spinning.
-         * @return true Wheel is spinning
-         * @return false While is not spinning
-         */
-        bool getRightWheelSpinning() { return rightIsSpinning; }
-
-        /**
          * Get the Battery Level
          * @return float Battery level in Volt
          */
@@ -173,22 +159,12 @@ private:
 
         virtual void initPWM(int gpio);
 
-        static void encoderEventL(int user_gpio, int level, uint32_t tick, void *userdata);
-        static void encoderEventR(int user_gpio, int level, uint32_t tick, void *userdata);
-
         unsigned readADC(unsigned ch);
 
         long samplingInterval;
         StepCallback *stepCallback = nullptr;
         float leftWheelSpeed = 0;
         float rightWheelSpeed = 0;
-        int spinningCounter = 1;
-        int leftWheelCounter = 0;
-        int rightWheelCounter = 0;
-        int leftWheelCallbackID = 0;
-        int rightWheelCallbackID = 0;
-        bool leftIsSpinning = false;
-        bool rightIsSpinning = false;
         unsigned leftDistance = 0;
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;

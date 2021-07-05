@@ -31,10 +31,6 @@ void AlphaBot::start(long _samplingInterval) {
         gpioSetMode(GPIO_COLLISION_L,PI_INPUT);
         gpioSetMode(GPIO_COLLISION_R,PI_INPUT);
 
-        // wheel speed
-        leftWheelCallbackID = gpioSetAlertFuncEx(GPIO_SPEED_L, encoderEventL, (void*)this);
-        rightWheelCallbackID = gpioSetAlertFuncEx(GPIO_SPEED_R, encoderEventR, (void*)this);
-
         // ADC
         gpioSetMode(GPIO_ADC_CS,PI_OUTPUT);
         gpioWrite(GPIO_ADC_CS,1);
@@ -49,21 +45,9 @@ void AlphaBot::start(long _samplingInterval) {
 
 void AlphaBot::stop() {
         CppTimer::stop();
-	gpioSetAlertFuncEx(GPIO_SPEED_L, encoderEventL, NULL);
-        gpioSetAlertFuncEx(GPIO_SPEED_R, encoderEventR, NULL);
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
 	gpioTerminate();
-}
-
-void AlphaBot::encoderEventL(int, int, uint32_t, void * userdata) {
-        AlphaBot* alphabot = (AlphaBot*)userdata;
-	alphabot->leftWheelCounter++;
-}
-
-void AlphaBot::encoderEventR(int, int, uint32_t, void * userdata) {
-        AlphaBot* alphabot = (AlphaBot*)userdata;
-	alphabot->rightWheelCounter++;
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
@@ -133,16 +117,6 @@ void AlphaBot::timerEvent() {
 	// IR sensors
 	for(unsigned i=0;i<(nIR);i++) {
 		ir[i] = (float)(readADC(i)) / ADCmax;
-	}
-	
-	// wheel encoders
-	spinningCounter--;
-	if (spinningCounter < 1) {
-		leftIsSpinning = leftWheelCounter > 0;
-		rightIsSpinning = rightWheelCounter > 0;
-		rightWheelCounter = 0;
-		leftWheelCounter = 0;
-		spinningCounter = 500 / samplingInterval;
 	}
 	
 	// callback
