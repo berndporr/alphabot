@@ -80,7 +80,7 @@ public:
          * Get the Battery Level
          * @return float Battery level in Volt
          */
-        float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref; }
+        float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref * 2; }
 
         /**
          * Get the Collision Left (digital signal from the distance sensor)
