@@ -16,6 +16,11 @@ C++ class to control the basic functionality of a customised Alphabot
 ### Parallax Continuous Rotation Servos
 
 Throw the original DC motors in the bin and fit the [Parallax Continuous Rotation Servo](https://www.parallax.com/product/parallax-continuous-rotation-servo/) with 90deg brackets. Plug them into the servo ports S1 and S2.
+This corresponds to:
+```
+GPIO27 = Motor left
+GPIO22 = Motor right
+```
 
 ### CppTimer
 
