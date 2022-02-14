@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-Wall)
 
-find_package (Threads)
 find_package (Curses)
 
 set(LIBSRC alphabot.cpp)
@@ -25,7 +24,7 @@ set_target_properties(alphabot PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(alphabot ${CMAKE_THREAD_LIBS_INIT} pigpio rt cpptimer)
+target_link_libraries(alphabot pigpio rt)
 
 install(TARGETS alphabot EXPORT alphabot-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

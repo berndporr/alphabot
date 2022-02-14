@@ -13,7 +13,7 @@ void AlphaBot::initPWM(int gpio) {
         setRightWheelSpeed(0);
 }
 
-void AlphaBot::start(long _samplingInterval) {
+void AlphaBot::start(long _samplingInterval, int _timerNumber) {
 	int cfg = gpioCfgGetInternals();
 	cfg |= PI_CFG_NOSIGHANDLER;
 	gpioCfgSetInternals(cfg);
@@ -38,13 +38,18 @@ void AlphaBot::start(long _samplingInterval) {
         gpioSetMode(GPIO_ADC_IOCLK,PI_OUTPUT);
         gpioSetMode(GPIO_ADC_DOUT,PI_INPUT);
 
-        // central processing
         samplingInterval = _samplingInterval;
-	CppTimer::startms(samplingInterval);
+	timerNumber = _timerNumber;
+	r = gpioSetTimerFuncEx(timerNumber,samplingInterval,pigpioTimerCallback,(void*)this);
+	if (r < 0) {
+		char msg[] = "Cannot start timer.";
+		std::cerr << msg << "\n";
+		throw msg;
+	}
 }
 
 void AlphaBot::stop() {
-        CppTimer::stop();
+	gpioSetTimerFuncEx(timerNumber,samplingInterval,NULL,(void*)this);
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
 	gpioTerminate();

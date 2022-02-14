@@ -8,14 +8,14 @@
 
 #include <thread>
 #include <sys/time.h>
-#include <CppTimer.h>
 
 #define DEFAULT_SAMPLING_INTERVAL_MS 100 // ms
+#define DEFAULT_TIMER_NUMBER 0
 
 /**
  * Alphabot class which communicates with the Alphabot hardware
  */
-class AlphaBot : public CppTimer
+class AlphaBot
 {
 
 public:
@@ -40,7 +40,8 @@ public:
          * 
          * @param _samplingInterval Sampling interval in ms for the ADC data
          */
-        void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
+        void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS,
+		   int timerNumber = DEFAULT_TIMER_NUMBER);
 
         /**
          * Stops the communication with the Alphabot
@@ -155,7 +156,11 @@ private:
         static const unsigned ADCmax = 1023;
         static const unsigned ADCvref = 5;
 
-        virtual void timerEvent();
+        void timerEvent();
+
+	static void pigpioTimerCallback(void* alphabotptr) {
+		((AlphaBot*)alphabotptr)->timerEvent();
+	}
 
         virtual void initPWM(int gpio);
 
@@ -170,6 +175,7 @@ private:
         unsigned batteryLevel = 0;
         float ir[nIR] = {0, 0, 0, 0, 0};
         bool running = true;
+	int timerNumber = 0;
 };
 
 #endif

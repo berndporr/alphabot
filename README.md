@@ -1,4 +1,4 @@
-# C++ Alphabot API for the Raspberry PI
+# C++ Alphabot API for the Raspberry PI (customised)
 
 ![alt tag](robot.jpg)
 
@@ -20,16 +20,6 @@ This corresponds to:
 ```
 GPIO27 = Motor left
 GPIO22 = Motor right
-```
-
-### CppTimer
-
-Clone it and install from https://github.com/berndporr/cppTimer
-with:
-```
-cmake .
-make
-sudo install
 ```
 
 ### pigpio
