@@ -1,13 +1,19 @@
 #include "alphabot.h"
 #include <unistd.h>
 #include <cstdio>
+#include <stdlib.h>
 
 int running = 1;
 
 int main(int, char **)
 {
         AlphaBot alphabot;
-        alphabot.start();
+	try {
+		alphabot.start();
+	} catch (const char* tmp) {
+		fprintf(stderr,"\n%s\n",tmp);
+		abort();
+	}
 	float l = 0;
 	float r = 0;
 	float d = 0.0101f;
