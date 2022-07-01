@@ -174,7 +174,7 @@ private:
         unsigned rightDistance = 0;
         unsigned batteryLevel = 0;
         float ir[nIR] = {0, 0, 0, 0, 0};
-        bool running = true;
+        bool running = false;
 	int timerNumber = 0;
 };
 

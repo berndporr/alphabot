@@ -32,12 +32,17 @@ int main(int, char **)
 	AlphaBot alphabot;
 	DisplaySensorCallback displaySensorCallback;
 	alphabot.registerStepCallback(&displaySensorCallback);
+	try {
+		alphabot.start();
+	} catch (const char* tmp) {
+		fprintf(stderr,"\n%s\n",tmp);
+		abort();
+	}
 	initscr();
 	noecho();
 	clear();
 	mvaddstr(0, 0, "l)eft wheel, r)ight wheel, f)orward, b)ackward, SPACE=stop, ESC=end");
 	refresh();
-	alphabot.start();
 	float l = 0;
 	float r = 0;
 	char tmp[256];

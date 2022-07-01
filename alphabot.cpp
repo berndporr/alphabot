@@ -46,16 +46,20 @@ void AlphaBot::start(long _samplingInterval, int _timerNumber) {
 		std::cerr << msg << "\n";
 		throw msg;
 	}
+	running = true;
 }
 
 void AlphaBot::stop() {
+	if (!running) return;
 	gpioSetTimerFuncEx(timerNumber,samplingInterval,NULL,(void*)this);
         setLeftWheelSpeed(0);
         setRightWheelSpeed(0);
+	running = false;
 	gpioTerminate();
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
+	if (!running) return 0;
 	unsigned us = 1;
         gpioWrite(GPIO_ADC_CS,0);
 	usleep(us);
@@ -112,6 +116,7 @@ unsigned AlphaBot::readADC(unsigned channel) {
 	
 
 void AlphaBot::timerEvent() {
+	if (!running) return;
 	// distance readings
 	leftDistance = readADC(ADC_DIST_L);
 	rightDistance = readADC(ADC_DIST_R);
@@ -131,6 +136,7 @@ void AlphaBot::timerEvent() {
 }
 
 void AlphaBot::setRightWheelSpeed(float speed) {
+	if (!running) return;
 	speed = -speed;
         if (speed < -1)
                 speed = -1;
@@ -143,6 +149,7 @@ void AlphaBot::setRightWheelSpeed(float speed) {
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
+	if (!running) return;
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
@@ -155,9 +162,11 @@ void AlphaBot::setLeftWheelSpeed(float speed) {
 
 
 bool AlphaBot::getCollisionLeft() {
+	if (!running) return false;
         return gpioRead(GPIO_COLLISION_L) == 0; 
 }
 
 bool AlphaBot::getCollisionRight() {
+	if (!running) return false;
         return gpioRead(GPIO_COLLISION_R) == 0; 
 }
