@@ -4,9 +4,6 @@
 #include <iostream>
 #include <unistd.h>
 
-static constexpr char err_cannotinit[] = "Cannot init pigpio.";
-static constexpr char err_cannotstarttimer[] = "Cannot start timer.";
-
 void AlphaBot::initPWM(int gpio) {
         gpioSetPWMfrequency(gpio,50);
         int rr = gpioGetPWMrealRange(gpio);
@@ -21,7 +18,7 @@ void AlphaBot::start(long _samplingInterval, int _timerNumber) {
 	gpioCfgSetInternals(cfg);
 	int r = gpioInitialise();
 	if (r < 0) {
-		throw err_cannotinit;
+		throw "Cannot init pigpio.";
 	}
 
         initPWM(GPIO_MOTORL);
@@ -42,7 +39,7 @@ void AlphaBot::start(long _samplingInterval, int _timerNumber) {
 	timerNumber = _timerNumber;
 	r = gpioSetTimerFuncEx(timerNumber,samplingInterval,pigpioTimerCallback,(void*)this);
 	if (r < 0) {
-		throw err_cannotstarttimer;
+		throw "Cannot start timer.";
 	}
 	running = true;
 }
