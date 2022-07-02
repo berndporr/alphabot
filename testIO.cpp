@@ -35,7 +35,7 @@ int main(int, char **)
 	try {
 		alphabot.start();
 	} catch (const char* tmp) {
-		fprintf(stderr,"\n%s\n",tmp);
+		fprintf(stderr,"%s\n",tmp);
 		abort();
 	}
 	initscr();
