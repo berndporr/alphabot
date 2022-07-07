@@ -1,4 +1,7 @@
-# C++ Alphabot API for the Raspberry PI (customised)
+# C++ Alphabot API for the Raspberry PI
+
+This page provides instructions how to customise the alphabot so that it's actually
+usable for research and it provides a C++ API with proper setters and callbacks.
 
 ![alt tag](robot.jpg)
 
@@ -9,9 +12,9 @@ C++ class to control the basic functionality of a customised Alphabot
  - Distance sensor readings (digital and analogue)
  - Battery voltage
  - IR sensor readings
- - 10Hz sampling rate with callback
+ - 10Hz ADC sampling rate with callback
 
-## Prerequisites
+## Hardware mods
 
 ### Parallax Continuous Rotation Servos
 
@@ -28,6 +31,8 @@ De-solder the LM2596 and throw it in the bin. It supposed to have a dropout volt
 should be fine but it seems to be more 2V. It's not even recommended by TI who recommend the LMR33630 for new designs.
 
 Replace the LM2596 with a [REC8-0505SRW/H3/A/M](https://onecall.farnell.com/recom-power/rec8-0505srw-h3-a-m/dc-dc-converter-5v-1-6a/dp/2846262). Just glue it upside down on the PCB and run 4 wires to Vin and +5V.
+
+## Software prerequisites
 
 ### pigpio
 The Raspberry PI hardware is accessed via the
