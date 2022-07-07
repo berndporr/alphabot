@@ -25,9 +25,9 @@ GPIO22 = Motor right
 ### Voltage regulator
 
 De-solder the LM2596 and throw it in the bin. It supposed to have a dropout voltage of 1V so that the 7-7.2V from the battery
-should be fine but it seems to be more 2V.
+should be fine but it seems to be more 2V. It's not even recommended by TI who recommend the LMR33630 for new designs.
 
-Replace it with a [REC8-0505SRW/H3/A/M](https://onecall.farnell.com/recom-power/rec8-0505srw-h3-a-m/dc-dc-converter-5v-1-6a/dp/2846262). Just glue it upside down on the PCB and run 4 wires to Vin and +5V.
+Replace the LM2596 with a [REC8-0505SRW/H3/A/M](https://onecall.farnell.com/recom-power/rec8-0505srw-h3-a-m/dc-dc-converter-5v-1-6a/dp/2846262). Just glue it upside down on the PCB and run 4 wires to Vin and +5V.
 
 ### pigpio
 The Raspberry PI hardware is accessed via the
