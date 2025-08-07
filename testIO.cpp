@@ -5,24 +5,15 @@
 int running = 1;
 
 // callback every 100ms
-class DisplaySensorCallback : public AlphaBot::StepCallback
+class DisplaySensorCallback : public AlphaBot::BatteryCallback
 {
 public:
-	virtual void step(AlphaBot &alphabot)
+	virtual void hasBatteryVoltage(float v)
 	{
 		char tmp[256];
-		sprintf(tmp, "Coll L = %d, Coll R = %d       ", alphabot.getCollisionLeft(), alphabot.getCollisionRight());
-		mvaddstr(1, 0, tmp);
 		sprintf(tmp,
-				"Dist L = %1.4f, Dist R = %1.4f, Power = %1.1f Volt    ",
-				alphabot.getLeftDistance(),
-				alphabot.getRightDistance(),
-				alphabot.getBatteryLevel());
+			"Power = %1.1f Volt    ",v);
 		mvaddstr(3, 0, tmp);
-		for(unsigned i = 0; i < alphabot.nIR; i++) {
-			sprintf(tmp,"IR%d = %1.4f  ",i,alphabot.getIR()[i]);
-			mvaddstr(4,i*15,tmp);
-		}
 		refresh();
 	}
 };
@@ -31,7 +22,7 @@ int main(int, char **)
 {
 	AlphaBot alphabot;
 	DisplaySensorCallback displaySensorCallback;
-	alphabot.registerStepCallback(&displaySensorCallback);
+	alphabot.registerBatteryCallback(&displaySensorCallback);
 	try {
 		alphabot.start();
 	} catch (const char* tmp) {

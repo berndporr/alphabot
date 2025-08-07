@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
@@ -8,14 +8,14 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project(Alphabot_Library LANGUAGES CXX)
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 add_compile_options(-Wall)
 
 find_package (Curses)
 
-set(LIBSRC alphabot.cpp)
-set(LIBINCLUDE alphabot.h)
+set(LIBSRC alphabot.cpp CppTimer.cpp gpiopin.cpp)
+set(LIBINCLUDE alphabot.h rpi_pwm.h CppTimer.h gpiopin.h)
 
 add_library(alphabot
   STATIC
@@ -26,7 +26,7 @@ set_target_properties(alphabot PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(alphabot pigpio rt)
+target_link_libraries(alphabot gpiod rt)
 
 install(TARGETS alphabot EXPORT alphabot-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

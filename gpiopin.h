@@ -17,6 +17,7 @@
 #include <thread>
 #include <gpiod.h>
 #include <vector>
+#include <string>
 
 // enable debug messages and error messages to stderr
 #ifndef NDEBUG
@@ -25,31 +26,24 @@
 
 #define ISR_TIMEOUT 1 // sec
 
-#define CONSUMER "Consumer"
-
 class GPIOPin {
 
 public:
+    enum PinFunction {INPUT, OUTPUT, EVENT};
+    
     /**
      * \param chipNo GPIO Chip number. It's usually 0.
      * \param pinNo GPIO Pin number.
      **/
-    void GPIOPin(int pinNo,
-		 int ChipNo = 0);
+    GPIOPin(int pinNo,
+	    PinFunction func,
+	    int ChipNo = 0);
     
     /**
      * Destructor which makes sure the data acquisition
      * stops on exit.
      **/
     ~GPIOPin();
-
-    int requestInput() {
-	ret = gpiod_line_request_input(pinGPIO, CONSUMER);
-	if (ret < 0) {
-		perror("Request line as input failed.\n");
-	}
-	return ret;
-    }
 
     int getValue() {
 	int val = gpiod_line_get_value(pinGPIO);
@@ -107,6 +101,10 @@ private:
     bool running = false;
 
     std::vector<GPIOEventCallbackInterface*> adsCallbackInterfaces;
+
+    PinFunction pinFunction;
+
+    std::string pinLabel;
 };
 
 

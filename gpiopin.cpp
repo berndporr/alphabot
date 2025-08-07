@@ -1,18 +1,21 @@
-#include "gpioevent.h"
+#include "gpiopin.h"
 
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <string>
 
-
-void GPIOPin::GPIOPin(int pinNo,
-		      int chipNo) {
+GPIOPin::GPIOPin(int pinNo,
+		 PinFunction func,
+		 int chipNo) {
+    
+    pinFunction = func;
 	
 #ifdef DEBUG
     fprintf(stderr,"Init.\n");
 #endif
-
+    
     chipGPIO = gpiod_chip_open_by_number(chipNo);
     if (NULL == chipGPIO) {
 #ifdef DEBUG
@@ -28,10 +31,29 @@ void GPIOPin::GPIOPin(int pinNo,
 #endif
 	throw "GPIO line error.\n";
     }
+
+    int ret;
+    switch (func) {
+    case INPUT:
+    case EVENT:
+	pinLabel = "Input"+std::to_string(chipNo)+"_"+std::to_string(pinNo);
+	ret = gpiod_line_request_input(pinGPIO, pinLabel.c_str());
+	if (ret < 0) {
+	    perror("Request line as input failed.\n");
+	}
+	break;
+    case OUTPUT:
+	pinLabel = "Output"+std::to_string(chipNo)+"_"+std::to_string(pinNo);
+	ret = gpiod_line_request_output(pinGPIO, pinLabel.c_str(), 0);
+	if (ret < 0) {
+	    perror("Request line as input failed.\n");
+	}
+	break;
+    }
 }
 
 
-void GPIOPin::~GPIOPin() {
+GPIOPin::~GPIOPin() {
     stop();
     gpiod_line_release(pinGPIO);
     gpiod_chip_close(chipGPIO);
@@ -39,7 +61,8 @@ void GPIOPin::~GPIOPin() {
 
 
 void GPIOPin::start() {
-    int ret = gpiod_line_request_both_edges_events(pinGPIO, CONSUMER);
+    if (EVENT != pinFunction) return;
+    int ret = gpiod_line_request_both_edges_events(pinGPIO, pinLabel.c_str());
     if (ret < 0) {
 #ifdef DEBUG
 	fprintf(stderr,"Request event notification failed on pin %d and chip %d.\n",
