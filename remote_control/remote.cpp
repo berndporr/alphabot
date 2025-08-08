@@ -45,14 +45,16 @@ private:
     Publisher* publisher_ = nullptr;
 
     Topic* topicSteering = nullptr;
-    Topic* topicBraking = nullptr;
+    Topic* topicBrake = nullptr;
     Topic* topicThrottle = nullptr;
 
     DataWriter* writerSteering = nullptr;
-    DataWriter* writerBraking = nullptr;
+    DataWriter* writerBrake = nullptr;
     DataWriter* writerThrottle = nullptr;
 
-    TypeSupport type_;
+    TypeSupport typeSteering;
+    TypeSupport typeBrake;
+    TypeSupport typeThrottle;
 
     class PubListener : public DataWriterListener
     {
@@ -94,7 +96,10 @@ private:
 
 public:
 
-    RemotePublisher() : type_(new SteeringMsgPubSubType()) {}
+    RemotePublisher() : typeSteering(new SteeringMsgPubSubType()),
+			typeBrake(new BrakeMsgPubSubType()),
+			typeThrottle(new ThrottleMsgPubSubType())
+	{}
 
     virtual ~RemotePublisher()
     {
@@ -125,8 +130,10 @@ public:
             return false;
         }
 
-        // Register the Type
-        type_.register_type(participant_);
+        // Register the Types
+        typeSteering.register_type(participant_);
+        typeBrake.register_type(participant_);
+        typeThrottle.register_type(participant_);
 
         // Create the Publisher
         publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
@@ -135,19 +142,36 @@ public:
             return false;
         }
 
-        // Create the publications Topic
+        // Steering
         topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
         if (topicSteering == nullptr) {
             return false;
         }
-
-        // Create the DataWriter
         writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
-
-        if (writerSteering == nullptr)
-        {
+        if (writerSteering == nullptr){
             return false;
         }
+	
+        // Throttle
+        topicThrottle = participant_->create_topic("ThrottleTopic", "ThrottleMsg", TOPIC_QOS_DEFAULT);
+        if (topicThrottle == nullptr) {
+            return false;
+        }
+        writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT, &listener_);
+        if (writerThrottle == nullptr){
+            return false;
+        }
+	
+        // Brake
+        topicBrake = participant_->create_topic("BrakeTopic", "BrakeMsg", TOPIC_QOS_DEFAULT);
+        if (topicBrake == nullptr) {
+            return false;
+        }
+        writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT, &listener_);
+        if (writerBrake == nullptr){
+            return false;
+        }
+	
         return true;
     }
 
@@ -157,6 +181,28 @@ public:
         if (listener_.matched_ > 0)
         {
             writerSteering->write(&msg);
+            return true;
+        }
+        return false;
+    }
+
+    //!Send a publication
+    bool publishThrottle(ThrottleMsg& msg)
+    {
+        if (listener_.matched_ > 0)
+        {
+            writerThrottle->write(&msg);
+            return true;
+        }
+        return false;
+    }
+
+    //!Send a publication
+    bool publishBrake(BrakeMsg& msg)
+    {
+        if (listener_.matched_ > 0)
+        {
+            writerBrake->write(&msg);
             return true;
         }
         return false;
@@ -176,6 +222,27 @@ int main(int argc, char *argv[]) {
 		std::cout << "No messages sent as there is no listener." << std::endl;
 	    }	    
 	});
+
+	logiwheel.registerThrottleCallback([&](float v){
+	    ThrottleMsg msg;
+	    msg.throttle(v);
+	    if (remotePublisher.publishThrottle(msg)) {
+		std::cout << v << " SENT" << std::endl;
+	    } else {
+		std::cout << "No messages sent as there is no listener." << std::endl;
+	    }	    
+	});
+
+	logiwheel.registerBrakeCallback([&](float v){
+	    BrakeMsg msg;
+	    msg.brake(v);
+	    if (remotePublisher.publishBrake(msg)) {
+		std::cout << v << " SENT" << std::endl;
+	    } else {
+		std::cout << "No messages sent as there is no listener." << std::endl;
+	    }	    
+	});
+
 	if(!remotePublisher.init())
 	{
 	    std::cerr << "Pub not init'd." << std::endl;

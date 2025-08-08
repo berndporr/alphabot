@@ -8,9 +8,7 @@ find_package(fastrtps REQUIRED)
 set (CMAKE_CXX_STANDARD 17)
 
 # Create a library for the message / topic
-add_custom_target(
-    messages
-    COMMAND fastddsgen brake.idl  steering.idl  throttle.idl
+execute_process(COMMAND fastddsgen brake.idl  steering.idl  throttle.idl
 )
 
 add_library(FastDDSMsg STATIC
@@ -19,8 +17,6 @@ add_library(FastDDSMsg STATIC
 		       throttle.cxx throttlePubSubTypes.cxx
 )
   
-add_dependencies(FastDDSMsg messages)
-
 
 # Publisher
 add_executable(remote remote.cpp)
@@ -28,5 +24,5 @@ target_link_libraries(remote fastcdr fastrtps FastDDSMsg)
 
 
 # Subscriber
-add_executable(robot robot.cpp)
-target_link_libraries(robot fastcdr fastrtps FastDDSMsg)
+add_executable(test_robo_msg_sub test_robo_msg_sub.cpp)
+target_link_libraries(test_robo_msg_sub fastcdr fastrtps FastDDSMsg)
