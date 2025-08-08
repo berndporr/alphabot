@@ -11,6 +11,8 @@ void AlphaBot::start(long _samplingInterval) {
         GPIO_ADC_CS.setValue(1);
 
         samplingInterval = _samplingInterval;
+
+	startms(_samplingInterval);
 }
 
 void AlphaBot::stop() {
@@ -19,7 +21,6 @@ void AlphaBot::stop() {
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
-    if (!running) return 0;
     const unsigned us = 1;
     GPIO_ADC_CS.setValue(0);
     usleep(us);
@@ -75,29 +76,27 @@ unsigned AlphaBot::readADC(unsigned channel) {
 
 void AlphaBot::timerEvent() {
     // battery
-    batteryLevel = readADC(ADC_VIN);
+    batteryLevel = (float)readADC(ADC_VIN) / ADCmax * ADCvref;
     // callback
     if (nullptr != batteryCallback)
 	batteryCallback->hasBatteryVoltage(batteryLevel);
 }
 
 void AlphaBot::setRightWheelSpeed(float speed) {
-	if (!running) return;
 	speed = -speed;
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
                 speed = 1;
         rightWheelSpeed = speed;
-	right_wheel_pwm.setDutyCycleNS(speed2nanosec(speed));
+	right_wheel_pwm.setDutyCycleNanosecs(speed2nanosec(speed));
 }
 
 void AlphaBot::setLeftWheelSpeed(float speed) {
-	if (!running) return;
         if (speed < -1)
                 speed = -1;
         if (speed > 1)
                 speed = 1;
         leftWheelSpeed = speed;
-	left_wheel_pwm.setDutyCycleNS(speed2nanosec(speed));
+	left_wheel_pwm.setDutyCycleNanosecs(speed2nanosec(speed));
 }

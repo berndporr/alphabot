@@ -82,7 +82,7 @@ public:
      * Get the Battery Level
      * @return float Battery level in Volt
      */
-    float getBatteryLevel() { return (float)batteryLevel / ADCmax * ADCvref * 2; }
+    float getBatteryLevel() { return batteryLevel; }
 
 private:
     static constexpr int PWM_CHANNEL_MOTORL = 2;
@@ -102,8 +102,8 @@ private:
     GPIOPin GPIO_ADC_ADDR{24,GPIOPin::OUTPUT};
     GPIOPin GPIO_ADC_DOUT{23,GPIOPin::INPUT};
     GPIOPin GPIO_ADC_CS{5,GPIOPin::OUTPUT};
-    static const unsigned ADCmax = 1023;
-    static const unsigned ADCvref = 5;
+    static constexpr float ADCmax = 1023;
+    static constexpr float ADCvref = 5;
     
     void timerEvent();
     

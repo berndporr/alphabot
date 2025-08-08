@@ -19,12 +19,11 @@ public:
      * \param duty_cycle The initial duty cycle of the PWM (default 0)
      * \param chip The chip number (for RPI5 it's 2)
      **/
-    void start(int channel, int frequency, float duty_cycle = 0, int chip = 2) {
+    void start(int channel, int frequency, int chip = 0) {
 	chippath = "/sys/class/pwm/pwmchip" + std::to_string(chip);
 	pwmpath = chippath + "/pwm" + std::to_string(channel);
 	FILE* fp;
 	std::string p = chippath+"/export";
-	std::cout << p << std::endl;
 	fp = fopen(p.c_str(), "w");
 	if (NULL == fp) {
 	    fprintf(stderr,"PWM device does not exist. Make sure to add 'dtoverlay=pwm-2chan' to /boot/firmware/config.txt.\n");
@@ -35,14 +34,14 @@ public:
 	usleep(100000);
 	per = (int)1E9 / frequency;
 	setPeriod(per);
-	setDutyCycle(duty_cycle);
+	setDutyCyclePercent(0);
 	enable();
     }
 
     void stop() {
 	disable();
     }
-    
+
     ~RPI_PWM() {
 	disable();
     }
@@ -51,15 +50,15 @@ public:
      * Sets the duty cycle.
      * \param v The duty cycle in percent.
      **/
-    void setDutyCycle(float v) {
+    void setDutyCyclePercent(float v) {
 	int dc = (int)round((float)per * (v / 100.0));
-	setDutyCycleNS(dc);
+	setDutyCycleNanosecs(dc);
     }
 
     /**
      * Sets the duty cycle in nanoseconds
      **/
-    void setDutyCycleNS(int ns) {
+    void setDutyCycleNanosecs(int ns) {
 	writeSYS(pwmpath+"/"+"duty_cycle", ns);
     }
 
@@ -81,7 +80,7 @@ private:
     std::string chippath;
     std::string pwmpath;
     
-    void writeSYS(std::string filename, int value) {
+    void writeSYS(std::string filename, int value) const {
 	FILE* fp;
 	fp = fopen(filename.c_str(), "w");
 	if (NULL == fp) {
