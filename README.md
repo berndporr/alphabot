@@ -9,20 +9,21 @@ C++ class to control the basic functionality of a customised Alphabot
 (https://www.waveshare.com/wiki/AlphaBot) with a Raspberry PI:
 
  - Motor control (using the Parallax Continuous Rotation Servo)
- - Distance sensor readings (digital and analogue)
  - Battery voltage
- - IR sensor readings
- - 10Hz ADC sampling rate with callback
 
 ## Hardware mods
 
 ### Parallax Continuous Rotation Servos
 
 Throw the original DC motors in the bin and fit the [Parallax Continuous Rotation Servo](https://www.parallax.com/product/parallax-continuous-rotation-servo/) with 90deg brackets. Plug them into the servo ports S1 and S2.
-This corresponds to:
+
+Wire up the pin header:
+
+![alt tag](header.jpg)
+
 ```
-GPIO27 = Motor left
-GPIO22 = Motor right
+GPIO18 = S1 = Motor left
+GPIO19 = S2 = Motor right
 ```
 
 ### Voltage regulator
@@ -30,15 +31,44 @@ GPIO22 = Motor right
 De-solder the LM2596 and throw it in the bin. It supposed to have a dropout voltage of 1V so that the 7-7.2V from the battery
 should be fine but it seems to be more 2V. It's not even recommended by TI who recommend the LMR33630 for new designs.
 
-Replace the LM2596 with a [REC8-0505SRW/H3/A/M](https://onecall.farnell.com/recom-power/rec8-0505srw-h3-a-m/dc-dc-converter-5v-1-6a/dp/2846262). Just glue it upside down on the PCB and run 4 wires to Vin and +5V.
+Replace the LM2596 with a [MGS100505](https://onecall.farnell.com/cosel/mgs100505/dc-dc-converter-5v-2a/dp/4296076). Just glue it upside down on the PCB and run 4 wires to Vin and +5V.
 
 ## Software prerequisites
 
-### pigpio
-The Raspberry PI hardware is accessed via the
-`pigpio` library. Install its package:
+Add to `/boot/firmware/config.txt`:
+
 ```
-apt-get install libpigpio-dev
+dtoverlay=pwm-2chan
+```
+
+and reboot.
+
+Check with:
+
+```
+pinctrl -p
+```
+
+that you see:
+
+```
+12: a3    pd | lo // GPIO18 = PWM0_CHAN2
+35: a3    pd | lo // GPIO19 = PWM0_CHAN3
+```
+
+which corresponds to the sysfs files:
+
+```
+/sys/class/pwm/pwmchip0/pwm2: GPIO18 
+/sys/class/pwm/pwmchip0/pwm3: GPIO19
+```
+
+### libgpiod
+
+The GPIO pins are accessed via the C++ API of the `libgpiod`:
+
+```
+apt-get install libgpiod-dev
 ```
 
 ### ncurses
@@ -64,12 +94,12 @@ The online documentation is here: https://berndporr.github.io/alphabot/
 
 ### Start/stop
 
-Start the communication with the robot:
+Start the callback reporting the battery voltage.
 ```
 start()
 ```
 
-Stop the communication:
+Stop the callback.
 ```
 stop()
 ```
@@ -83,39 +113,9 @@ setRightWheelSpeed(float speed);
 ```
 where speed is between -1 and +1.
 
-### Get Collision sensor readings
-
-The digital functions are boolean values which are true if the
-distance sensor threshold (set with the potentiometer) has been reached:
-```
-bool getCollisionLeft();
-bool getCollisionRight();
-```
-
-The analogue readings from the sensors from 0..1 can be read with:
-```
-float getLeftDistance()
-float getRightDistance()
-```
-
-### Battery voltage
-
-The function `getBatteryLevel()` provides the voltage of the battery
-in volt.
-
-### Infrared channels / general purpose ADC channels 0-4
-
-```
-float (&getIR())[nIR]
-```
-returns a reference to the whole array of IR sensor readings
-normalised between 0..1.
-
 ### Callback
 
-Whenever a new set of analogue readings is available the callback `step`
-in `StepCallback` is called. It contains the reference to the Alphabot
-class itself so that one can read the different ADC values.
+There is callback which reports the battery voltage.
 
 ## Demo programs
 
