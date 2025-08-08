@@ -14,10 +14,10 @@ add_custom_target(
 )
 
 add_library(FastDDSMsg STATIC
-  SteeringMsg.cxx SteeringMsgPubSubTypes.cxx
-  BrakeMsg.cxx BrakeMsgPubSubTypes.cxx
-  ThrottleMsg.cxx ThrottleMsgPubSubTypes.cxx
-  )
+		       brake.cxx brakePubSubTypes.cxx
+		       steering.cxx steeringPubSubTypes.cxx
+		       throttle.cxx throttlePubSubTypes.cxx
+)
   
 add_dependencies(FastDDSMsg messages)
 

@@ -17,7 +17,9 @@
  *
  */
 
-#include "HelloWorldMsgPubSubTypes.h"
+#include "brakePubSubTypes.h"
+#include "steeringPubSubTypes.h"
+#include "throttlePubSubTypes.h"
 
 #include <chrono>
 #include <thread>
@@ -33,7 +35,7 @@
 
 using namespace eprosima::fastdds::dds;
 
-class HelloWorldSubscriber
+class RobotSubscriber
 {
 private:
 
@@ -41,9 +43,13 @@ private:
 
     Subscriber* subscriber_ = nullptr;
 
-    DataReader* reader_ = nullptr;
+    DataReader* readerSteering = nullptr;
+    DataReader* readerBraking = nullptr;
+    DataReader* readerThrottle = nullptr;
 
-    Topic* topic_ = nullptr;
+    Topic* topicSteering = nullptr;
+    Topic* topicBraking = nullptr;
+    Topic* topicThrottle = nullptr;
 
     TypeSupport type_;
 
@@ -78,12 +84,12 @@ private:
         void on_data_available(DataReader* reader) override
         {
             SampleInfo info;
-	    HelloWorldMsg hello;
-            if (reader->take_next_sample(&hello, &info) == ReturnCode_t::RETCODE_OK)
+	    SteeringMsg msg;
+            if (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
             {
                 if (info.valid_data)
                 {
-                    std::cout << "Message: " << hello.message() << " with index: " << hello.index()
+                    std::cout << "Steering: " << msg.steering()
                                 << " RECEIVED." << std::endl;
                 }
             }
@@ -93,17 +99,17 @@ private:
 
 public:
 
-    HelloWorldSubscriber() : type_(new HelloWorldMsgPubSubType()) {}
+    RobotSubscriber() : type_(new SteeringMsgPubSubType()) {}
 
-    virtual ~HelloWorldSubscriber()
+    virtual ~RobotSubscriber()
     {
-        if (reader_ != nullptr)
+        if (readerSteering != nullptr)
         {
-            subscriber_->delete_datareader(reader_);
+            subscriber_->delete_datareader(readerSteering);
         }
-        if (topic_ != nullptr)
+        if (topicSteering != nullptr)
         {
-            participant_->delete_topic(topic_);
+            participant_->delete_topic(topicSteering);
         }
         if (subscriber_ != nullptr)
         {
@@ -127,27 +133,26 @@ public:
         // Register the Type
         type_.register_type(participant_);
 
-        // Create the subscriptions Topic
-	// !! Important that this matches with the name of message defined in HelloWorldMsg.idl !!
-        topic_ = participant_->create_topic("HelloWorldTopic", "HelloWorldMsg", TOPIC_QOS_DEFAULT);
-
-        if (topic_ == nullptr)
-        {
-            return false;
-        }
-
         // Create the Subscriber
         subscriber_ = participant_->create_subscriber(SUBSCRIBER_QOS_DEFAULT, nullptr);
-
         if (subscriber_ == nullptr)
         {
             return false;
         }
 
-        // Create the DataReader
-        reader_ = subscriber_->create_datareader(topic_, DATAREADER_QOS_DEFAULT, &listener_);
+        // Create the subscriptions Topic
+	// !! Important that this matches with the name of message defined in HelloWorldMsg.idl !!
+	topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
+        if (topicSteering == nullptr)
+        {
+            return false;
+        }
 
-        if (reader_ == nullptr)
+        // Create the DataReader
+        readerSteering = subscriber_->create_datareader(topicSteering,
+							DATAREADER_QOS_DEFAULT,
+							&listener_);
+        if (readerSteering == nullptr)
         {
             return false;
         }
@@ -163,7 +168,7 @@ int main(
 {
     std::cout << "Starting subscriber. Press any key to stop it." << std::endl;
 
-    HelloWorldSubscriber mysub;
+    RobotSubscriber mysub;
     if(!mysub.init())
     {
 	std::cerr << "Could not init the subscriber." << std::endl;

@@ -18,7 +18,9 @@
  *
  */
 
-#include "HelloWorldMsgPubSubTypes.h"
+#include "brakePubSubTypes.h"
+#include "steeringPubSubTypes.h"
+#include "throttlePubSubTypes.h"
 
 #include <chrono>
 #include <thread>
@@ -29,11 +31,12 @@
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
-#include "CppTimer.h"
+
+#include "logiwheel.h"
 
 using namespace eprosima::fastdds::dds;
 
-class HelloWorldPublisher
+class RemotePublisher
 {
 private:
 
@@ -41,9 +44,13 @@ private:
 
     Publisher* publisher_ = nullptr;
 
-    Topic* topic_ = nullptr;
+    Topic* topicSteering = nullptr;
+    Topic* topicBraking = nullptr;
+    Topic* topicThrottle = nullptr;
 
-    DataWriter* writer_ = nullptr;
+    DataWriter* writerSteering = nullptr;
+    DataWriter* writerBraking = nullptr;
+    DataWriter* writerThrottle = nullptr;
 
     TypeSupport type_;
 
@@ -87,21 +94,21 @@ private:
 
 public:
 
-    HelloWorldPublisher() : type_(new HelloWorldMsgPubSubType()) {}
+    RemotePublisher() : type_(new SteeringMsgPubSubType()) {}
 
-    virtual ~HelloWorldPublisher()
+    virtual ~RemotePublisher()
     {
-        if (writer_ != nullptr)
+        if (writerSteering != nullptr)
         {
-            publisher_->delete_datawriter(writer_);
+            publisher_->delete_datawriter(writerSteering);
         }
         if (publisher_ != nullptr)
         {
             participant_->delete_publisher(publisher_);
         }
-        if (topic_ != nullptr)
+        if (topicSteering != nullptr)
         {
-            participant_->delete_topic(topic_);
+            participant_->delete_topic(topicSteering);
         }
         DomainParticipantFactory::get_instance()->delete_participant(participant_);
     }
@@ -121,27 +128,23 @@ public:
         // Register the Type
         type_.register_type(participant_);
 
-        // Create the publications Topic
-	// !! Important that this matches with the name of message defined in HelloWorldMsg.idl !!
-        topic_ = participant_->create_topic("HelloWorldTopic", "HelloWorldMsg", TOPIC_QOS_DEFAULT);
-
-        if (topic_ == nullptr)
-        {
-            return false;
-        }
-
         // Create the Publisher
         publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
-
         if (publisher_ == nullptr)
         {
             return false;
         }
 
-        // Create the DataWriter
-        writer_ = publisher_->create_datawriter(topic_, DATAWRITER_QOS_DEFAULT, &listener_);
+        // Create the publications Topic
+        topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
+        if (topicSteering == nullptr) {
+            return false;
+        }
 
-        if (writer_ == nullptr)
+        // Create the DataWriter
+        writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
+
+        if (writerSteering == nullptr)
         {
             return false;
         }
@@ -149,58 +152,38 @@ public:
     }
 
     //!Send a publication
-    bool publish(HelloWorldMsg& hello)
+    bool publishSteering(SteeringMsg& msg)
     {
         if (listener_.matched_ > 0)
         {
-            writer_->write(&hello);
+            writerSteering->write(&msg);
             return true;
         }
         return false;
     }
-
 };
 
 
-class EventEmitter : public CppTimer {
-
-public:
-    HelloWorldPublisher mypub;
-    uint32_t samples_sent = 1;
-    
-    void timerEvent() {
-	HelloWorldMsg hello;
-	hello.message("Hullo!");
-	hello.index(samples_sent);
-	if (mypub.publish(hello))
-	{
-	    std::cout << "Message: " << hello.message() << " with index: " << hello.index()
-		      << " SENT" << std::endl;
-	    samples_sent++;
-	} else {
-	    std::cout << "No messages sent as there is no listener." << std::endl;
-	}
-    }
-
-    void start() {
-	std::cout << "Starting publisher." << std::endl;
-
-	if(!mypub.init())
+int main(int argc, char *argv[]) {
+	LogiWheel logiwheel;
+	RemotePublisher remotePublisher;
+	logiwheel.registerSteeringCallback([&](float v){
+	    SteeringMsg msg;
+	    msg.steering(v);
+	    if (remotePublisher.publishSteering(msg)) {
+		std::cout << v << " SENT" << std::endl;
+	    } else {
+		std::cout << "No messages sent as there is no listener." << std::endl;
+	    }	    
+	});
+	if(!remotePublisher.init())
 	{
 	    std::cerr << "Pub not init'd." << std::endl;
-	    return;
+	    return -1;
 	}
-        startms(1000);
-    }
-
-};
-
-int main(
-    int,
-    char**)
-{
-    EventEmitter ee;
-    ee.start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-    ee.stop();
+	logiwheel.start();
+	printf("Press any key to stop it.\n");
+	getc(stdin);
+	logiwheel.stop();
+	return 0;
 }
