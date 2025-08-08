@@ -121,8 +121,7 @@ There is a callback which reports the battery voltage.
 
 ![alt tag](testIO.png)
 
-`testIO` is a simple test program which displays the different
-senor readings and you can test the motors. It also shows
-how the callback is used to display the sensor readings.
+`testIO` is a simple test program which displays the battery voltage and you can test the motors. It also shows
+how the callback is used to display the battery voltage.
 
 `testMotor` ramps up the motor speed and back again.
