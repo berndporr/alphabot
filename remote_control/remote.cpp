@@ -13,11 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file HelloWorldPublisher.cpp
- *
- */
-
 #include "brakePubSubTypes.h"
 #include "steeringPubSubTypes.h"
 #include "throttlePubSubTypes.h"
@@ -62,33 +57,33 @@ private:
 
         PubListener()
             : matched_(0)
-        {
-        }
+	    {
+	    }
 
         ~PubListener() override
-        {
-        }
+	    {
+	    }
 
         void on_publication_matched(
-                DataWriter*,
-                const PublicationMatchedStatus& info) override
-        {
-            if (info.current_count_change == 1)
-            {
-                matched_ = info.total_count;
-                std::cout << "Publisher matched." << std::endl;
-            }
-            else if (info.current_count_change == -1)
-            {
-                matched_ = info.total_count;
-                std::cout << "Publisher unmatched." << std::endl;
-            }
-            else
-            {
-                std::cout << info.current_count_change
-                        << " is not a valid value for PublicationMatchedStatus current count change." << std::endl;
-            }
-        }
+	    DataWriter*,
+	    const PublicationMatchedStatus& info) override
+	    {
+		if (info.current_count_change == 1)
+		{
+		    matched_ = info.total_count;
+		    std::cout << "Publisher matched." << std::endl;
+		}
+		else if (info.current_count_change == -1)
+		{
+		    matched_ = info.total_count;
+		    std::cout << "Publisher unmatched." << std::endl;
+		}
+		else
+		{
+		    std::cout << info.current_count_change
+			      << " is not a valid value for PublicationMatchedStatus current count change." << std::endl;
+		}
+	    }
 
         std::atomic_int matched_;
 
@@ -102,155 +97,155 @@ public:
 	{}
 
     virtual ~RemotePublisher()
-    {
-        if (writerSteering != nullptr)
-        {
-            publisher_->delete_datawriter(writerSteering);
-        }
-        if (publisher_ != nullptr)
-        {
-            participant_->delete_publisher(publisher_);
-        }
-        if (topicSteering != nullptr)
-        {
-            participant_->delete_topic(topicSteering);
-        }
-        DomainParticipantFactory::get_instance()->delete_participant(participant_);
-    }
+	{
+	    if (writerSteering != nullptr)
+	    {
+		publisher_->delete_datawriter(writerSteering);
+	    }
+	    if (publisher_ != nullptr)
+	    {
+		participant_->delete_publisher(publisher_);
+	    }
+	    if (topicSteering != nullptr)
+	    {
+		participant_->delete_topic(topicSteering);
+	    }
+	    DomainParticipantFactory::get_instance()->delete_participant(participant_);
+	}
 
     //!Initialize the publisher
     bool init()
-    {
-        DomainParticipantQos participantQos;
-        participantQos.name("Participant_publisher");
-        participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participantQos);
+	{
+	    DomainParticipantQos participantQos;
+	    participantQos.name("Participant_publisher");
+	    participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participantQos);
 
-        if (participant_ == nullptr)
-        {
-            return false;
-        }
+	    if (participant_ == nullptr)
+	    {
+		return false;
+	    }
 
-        // Register the Types
-        typeSteering.register_type(participant_);
-        typeBrake.register_type(participant_);
-        typeThrottle.register_type(participant_);
+	    // Register the Types
+	    typeSteering.register_type(participant_);
+	    typeBrake.register_type(participant_);
+	    typeThrottle.register_type(participant_);
 
-        // Create the Publisher
-        publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
-        if (publisher_ == nullptr)
-        {
-            return false;
-        }
+	    // Create the Publisher
+	    publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
+	    if (publisher_ == nullptr)
+	    {
+		return false;
+	    }
 
-        // Steering
-        topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
-        if (topicSteering == nullptr) {
-            return false;
-        }
-        writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
-        if (writerSteering == nullptr){
-            return false;
-        }
+	    // Steering
+	    topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
+	    if (topicSteering == nullptr) {
+		return false;
+	    }
+	    writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
+	    if (writerSteering == nullptr){
+		return false;
+	    }
 	
-        // Throttle
-        topicThrottle = participant_->create_topic("ThrottleTopic", "ThrottleMsg", TOPIC_QOS_DEFAULT);
-        if (topicThrottle == nullptr) {
-            return false;
-        }
-        writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT, &listener_);
-        if (writerThrottle == nullptr){
-            return false;
-        }
+	    // Throttle
+	    topicThrottle = participant_->create_topic("ThrottleTopic", "ThrottleMsg", TOPIC_QOS_DEFAULT);
+	    if (topicThrottle == nullptr) {
+		return false;
+	    }
+	    writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT, &listener_);
+	    if (writerThrottle == nullptr){
+		return false;
+	    }
 	
-        // Brake
-        topicBrake = participant_->create_topic("BrakeTopic", "BrakeMsg", TOPIC_QOS_DEFAULT);
-        if (topicBrake == nullptr) {
-            return false;
-        }
-        writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT, &listener_);
-        if (writerBrake == nullptr){
-            return false;
-        }
+	    // Brake
+	    topicBrake = participant_->create_topic("BrakeTopic", "BrakeMsg", TOPIC_QOS_DEFAULT);
+	    if (topicBrake == nullptr) {
+		return false;
+	    }
+	    writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT, &listener_);
+	    if (writerBrake == nullptr){
+		return false;
+	    }
 	
-        return true;
-    }
+	    return true;
+	}
 
     //!Send a publication
     bool publishSteering(SteeringMsg& msg)
-    {
-        if (listener_.matched_ > 0)
-        {
-            writerSteering->write(&msg);
-            return true;
-        }
-        return false;
-    }
+	{
+	    if (listener_.matched_ > 0)
+	    {
+		writerSteering->write(&msg);
+		return true;
+	    }
+	    return false;
+	}
 
     //!Send a publication
     bool publishThrottle(ThrottleMsg& msg)
-    {
-        if (listener_.matched_ > 0)
-        {
-            writerThrottle->write(&msg);
-            return true;
-        }
-        return false;
-    }
+	{
+	    if (listener_.matched_ > 0)
+	    {
+		writerThrottle->write(&msg);
+		return true;
+	    }
+	    return false;
+	}
 
     //!Send a publication
     bool publishBrake(BrakeMsg& msg)
-    {
-        if (listener_.matched_ > 0)
-        {
-            writerBrake->write(&msg);
-            return true;
-        }
-        return false;
-    }
+	{
+	    if (listener_.matched_ > 0)
+	    {
+		writerBrake->write(&msg);
+		return true;
+	    }
+	    return false;
+	}
 };
 
 
 int main(int argc, char *argv[]) {
-	LogiWheel logiwheel;
-	RemotePublisher remotePublisher;
-	logiwheel.registerSteeringCallback([&](float v){
-	    SteeringMsg msg;
-	    msg.steering(v);
-	    if (remotePublisher.publishSteering(msg)) {
-		std::cout << v << " SENT" << std::endl;
-	    } else {
-		std::cout << "No messages sent as there is no listener." << std::endl;
-	    }	    
-	});
+    LogiWheel logiwheel;
+    RemotePublisher remotePublisher;
+    logiwheel.registerSteeringCallback([&](float v){
+	SteeringMsg msg;
+	msg.steering(v);
+	if (remotePublisher.publishSteering(msg)) {
+	    std::cout << v << " SENT" << std::endl;
+	} else {
+	    std::cout << "No messages sent as there is no listener." << std::endl;
+	}	    
+    });
 
-	logiwheel.registerThrottleCallback([&](float v){
-	    ThrottleMsg msg;
-	    msg.throttle(v);
-	    if (remotePublisher.publishThrottle(msg)) {
-		std::cout << v << " SENT" << std::endl;
-	    } else {
-		std::cout << "No messages sent as there is no listener." << std::endl;
-	    }	    
-	});
+    logiwheel.registerThrottleCallback([&](float v){
+	ThrottleMsg msg;
+	msg.throttle(v);
+	if (remotePublisher.publishThrottle(msg)) {
+	    std::cout << v << " SENT" << std::endl;
+	} else {
+	    std::cout << "No messages sent as there is no listener." << std::endl;
+	}	    
+    });
 
-	logiwheel.registerBrakeCallback([&](float v){
-	    BrakeMsg msg;
-	    msg.brake(v);
-	    if (remotePublisher.publishBrake(msg)) {
-		std::cout << v << " SENT" << std::endl;
-	    } else {
-		std::cout << "No messages sent as there is no listener." << std::endl;
-	    }	    
-	});
+    logiwheel.registerBrakeCallback([&](float v){
+	BrakeMsg msg;
+	msg.brake(v);
+	if (remotePublisher.publishBrake(msg)) {
+	    std::cout << v << " SENT" << std::endl;
+	} else {
+	    std::cout << "No messages sent as there is no listener." << std::endl;
+	}	    
+    });
 
-	if(!remotePublisher.init())
-	{
-	    std::cerr << "Pub not init'd." << std::endl;
-	    return -1;
-	}
-	logiwheel.start();
-	printf("Press any key to stop it.\n");
-	getc(stdin);
-	logiwheel.stop();
-	return 0;
+    if(!remotePublisher.init())
+    {
+	std::cerr << "Pub not init'd." << std::endl;
+	return -1;
+    }
+    logiwheel.start();
+    printf("Press any key to stop it.\n");
+    getc(stdin);
+    logiwheel.stop();
+    return 0;
 }
