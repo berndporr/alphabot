@@ -126,9 +126,3 @@ senor readings and you can test the motors. It also shows
 how the callback is used to display the sensor readings.
 
 `testMotor` ramps up the motor speed and back again.
-
-`obstacleAvoid.cpp` implements a Braitenberg vehicle
-and it has an emergency stop if the digital readings from
-the collision sensors are triggered. This is an
-instructional example and needs to be tweaked. The
-fun begins here! :)
