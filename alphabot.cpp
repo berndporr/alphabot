@@ -14,15 +14,16 @@ void AlphaBot::start(long _samplingInterval) {
 
     // ADC
     GPIO_ADC_CS.set_value(1);
-    
+
     samplingInterval = _samplingInterval;
-    
+
     startms(_samplingInterval);
 }
 
 void AlphaBot::stop() {
-        setLeftWheelSpeed(0);
-        setRightWheelSpeed(0);
+    CppTimer::stop();
+    setLeftWheelSpeed(0);
+    setRightWheelSpeed(0);
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
@@ -33,7 +34,7 @@ unsigned AlphaBot::readADC(unsigned channel) {
     for (unsigned i = 0; i < 4; i ++) {
 	if(channel & 0x80)
 	    GPIO_ADC_ADDR.set_value(1);
-	else 
+	else
 	    GPIO_ADC_ADDR.set_value(0);
 	usleep(us);
 	GPIO_ADC_IOCLK.set_value(1);
@@ -52,8 +53,8 @@ unsigned AlphaBot::readADC(unsigned channel) {
     GPIO_ADC_CS.set_value(1);
     usleep(us);
     GPIO_ADC_CS.set_value(0);
-	
-    unsigned value = 0; 
+
+    unsigned value = 0;
     for (unsigned i = 0; i < 2; i ++) {
 	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
@@ -63,7 +64,7 @@ unsigned AlphaBot::readADC(unsigned channel) {
 	    value |= 0x1;
 	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
-    } 
+    }
 
     for (unsigned i = 0; i < 8; i ++) {
 	GPIO_ADC_IOCLK.set_value(1);
@@ -76,12 +77,12 @@ unsigned AlphaBot::readADC(unsigned channel) {
     }
     usleep(us);
     GPIO_ADC_CS.set_value(1);
-    return value; 
+    return value;
 }
 
 void AlphaBot::timerEvent() {
     // battery
-    batteryLevel = (float)readADC(ADC_VIN) / ADCmax * ADCvref;
+    batteryLevel = (float)readADC(ADC_VIN) / ADCmax * ADCvref * 2;
     // callback
     if (nullptr != batteryCallback)
 	batteryCallback->hasBatteryVoltage(batteryLevel);
