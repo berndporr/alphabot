@@ -58,8 +58,8 @@ public:
     }
     
     /** 
-     * registers callback which signals new data
-     * @param _stepcallback A pointer to the callback interface
+     * Registers callback which signals a battery voltage reading
+     * @param _batterycallback A pointer to the callback interface
      **/
     void registerBatteryCallback(BatteryCallback *_batterycallback)
         {

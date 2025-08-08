@@ -22,8 +22,8 @@ Wire up the pin header:
 ![alt tag](header.jpg)
 
 ```
-GPIO18 = S1 = Motor left
-GPIO19 = S2 = Motor right
+GPIO18 / PWM2 = S1 = Motor left
+GPIO19 / PWM3 = S2 = Motor right
 ```
 
 ### Voltage regulator

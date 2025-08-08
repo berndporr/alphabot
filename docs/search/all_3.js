@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nir',['nIR',['../classAlphaBot.html#afbad75c84f95cf2fde628eeca35606c9',1,'AlphaBot']]]
+  ['getbatterylevel_0',['getBatteryLevel',['../classAlphaBot.html#a783c86eec5d620288b2676815192a288',1,'AlphaBot']]]
 ];

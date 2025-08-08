@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['alphabot',['AlphaBot',['../classAlphaBot.html',1,'']]]
+  ['alphabot_0',['AlphaBot',['../classAlphaBot.html',1,'']]]
 ];
