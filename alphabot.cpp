@@ -7,12 +7,17 @@ void AlphaBot::start(long _samplingInterval) {
     left_wheel_pwm.start(2,pwmfrequ);
     right_wheel_pwm.start(3,pwmfrequ);
 
-        // ADC
-        GPIO_ADC_CS.setValue(1);
+    GPIO_ADC_IOCLK.request({"IOCLK", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
+    GPIO_ADC_ADDR.request({"ADDR", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
+    GPIO_ADC_DOUT.request({"IOCLK", gpiod::line_request::DIRECTION_INPUT, 0},1);  
+    GPIO_ADC_CS.request({"IOCLK", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
 
-        samplingInterval = _samplingInterval;
-
-	startms(_samplingInterval);
+    // ADC
+    GPIO_ADC_CS.set_value(1);
+    
+    samplingInterval = _samplingInterval;
+    
+    startms(_samplingInterval);
 }
 
 void AlphaBot::stop() {
@@ -22,55 +27,55 @@ void AlphaBot::stop() {
 
 unsigned AlphaBot::readADC(unsigned channel) {
     const unsigned us = 1;
-    GPIO_ADC_CS.setValue(0);
+    GPIO_ADC_CS.set_value(0);
     usleep(us);
     channel = channel << 4;
     for (unsigned i = 0; i < 4; i ++) {
 	if(channel & 0x80)
-	    GPIO_ADC_ADDR.setValue(1);
+	    GPIO_ADC_ADDR.set_value(1);
 	else 
-	    GPIO_ADC_ADDR.setValue(0);
+	    GPIO_ADC_ADDR.set_value(0);
 	usleep(us);
-	GPIO_ADC_IOCLK.setValue(1);
+	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
-	GPIO_ADC_IOCLK.setValue(0);
+	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
 	channel = channel << 1;
     }
     for (unsigned i = 0; i < 6;i ++) {
 	usleep(us);
-	GPIO_ADC_IOCLK.setValue(1);
+	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
-	GPIO_ADC_IOCLK.setValue(0);
+	GPIO_ADC_IOCLK.set_value(0);
     }
 
-    GPIO_ADC_CS.setValue(1);
+    GPIO_ADC_CS.set_value(1);
     usleep(us);
-    GPIO_ADC_CS.setValue(0);
+    GPIO_ADC_CS.set_value(0);
 	
     unsigned value = 0; 
     for (unsigned i = 0; i < 2; i ++) {
-	GPIO_ADC_IOCLK.setValue(1);
+	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
 	value <<= 1;
 	usleep(us);
-	if (GPIO_ADC_DOUT.getValue())
+	if (GPIO_ADC_DOUT.get_value())
 	    value |= 0x1;
-	GPIO_ADC_IOCLK.setValue(0);
+	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
     } 
 
     for (unsigned i = 0; i < 8; i ++) {
-	GPIO_ADC_IOCLK.setValue(1);
+	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
 	value <<= 1;
-	if (GPIO_ADC_DOUT.getValue())
+	if (GPIO_ADC_DOUT.get_value())
 	    value |= 0x1;
-	GPIO_ADC_IOCLK.setValue(0);
+	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
     }
     usleep(us);
-    GPIO_ADC_CS.setValue(1);
+    GPIO_ADC_CS.set_value(1);
     return value; 
 }
 

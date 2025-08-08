@@ -14,8 +14,8 @@ add_compile_options(-Wall)
 
 find_package (Curses)
 
-set(LIBSRC alphabot.cpp CppTimer.cpp gpiopin.cpp)
-set(LIBINCLUDE alphabot.h rpi_pwm.h CppTimer.h gpiopin.h)
+set(LIBSRC alphabot.cpp CppTimer.cpp)
+set(LIBINCLUDE alphabot.h rpi_pwm.h CppTimer.h)
 
 add_library(alphabot
   STATIC
@@ -26,7 +26,7 @@ set_target_properties(alphabot PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(alphabot gpiod rt)
+target_link_libraries(alphabot gpiodcxx rt)
 
 install(TARGETS alphabot EXPORT alphabot-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

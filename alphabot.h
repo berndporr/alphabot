@@ -8,9 +8,9 @@
 
 #include <thread>
 #include <sys/time.h>
+#include <gpiod.hpp>
 
 #include "CppTimer.h"
-#include "gpiopin.h"
 #include "rpi_pwm.h"
 
 #define DEFAULT_SAMPLING_INTERVAL_MS 100 // ms
@@ -98,10 +98,11 @@ private:
     }
     
     // TLC1543
-    GPIOPin GPIO_ADC_IOCLK{25,GPIOPin::OUTPUT};
-    GPIOPin GPIO_ADC_ADDR{24,GPIOPin::OUTPUT};
-    GPIOPin GPIO_ADC_DOUT{23,GPIOPin::INPUT};
-    GPIOPin GPIO_ADC_CS{5,GPIOPin::OUTPUT};
+    ::gpiod::chip chip{"gpiochip0"};
+    ::gpiod::line GPIO_ADC_IOCLK = chip.get_line(25);
+    ::gpiod::line GPIO_ADC_ADDR = chip.get_line(24);
+    ::gpiod::line GPIO_ADC_DOUT = chip.get_line(23);
+    ::gpiod::line GPIO_ADC_CS = chip.get_line(5);
     static constexpr float ADCmax = 1023;
     static constexpr float ADCvref = 5;
     
