@@ -1,0 +1,4 @@
+struct ThrottleMsg
+{
+    float throttle;
+};
