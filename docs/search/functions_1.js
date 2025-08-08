@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['registerstepcallback',['registerStepCallback',['../classAlphaBot.html#a9cb4f84343d1d465d0677d09f541ac11',1,'AlphaBot']]]
+  ['registerbatterycallback_0',['registerBatteryCallback',['../classAlphaBot.html#a34c4235072e8cc5f5cecb6fda7000fed',1,'AlphaBot']]]
 ];

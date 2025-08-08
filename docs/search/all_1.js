@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['c_2b_2b_20alphabot_20api_20for_20the_20raspberry_20pi',['C++ Alphabot API for the Raspberry PI',['../md_README.html',1,'']]]
+  ['batterycallback_0',['BatteryCallback',['../classAlphaBot_1_1BatteryCallback.html',1,'AlphaBot']]],
+  ['building_1',['Building',['../md_README.html#autotoc_md7',1,'']]]
 ];
