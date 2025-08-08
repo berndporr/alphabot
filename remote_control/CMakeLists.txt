@@ -8,15 +8,23 @@ find_package(fastrtps REQUIRED)
 set (CMAKE_CXX_STANDARD 17)
 
 # Create a library for the message / topic
-execute_process(COMMAND fastddsgen brake.idl  steering.idl  throttle.idl
-)
+
+set(LIBDDSIDL brake.idl  steering.idl  throttle.idl)
+
+execute_process(COMMAND fastddsgen ${LIBDDSIDL})
 
 add_library(FastDDSMsg STATIC
-		       brake.cxx brakePubSubTypes.cxx
-		       steering.cxx steeringPubSubTypes.cxx
-		       throttle.cxx throttlePubSubTypes.cxx
+	      brake.cxx brakePubSubTypes.cxx
+	      steering.cxx steeringPubSubTypes.cxx
+	      throttle.cxx throttlePubSubTypes.cxx )
+
+add_custom_target(
+    ddsmessages
+    COMMAND fastddsgen ${LIBDDSIDL}
 )
-  
+
+add_dependencies(FastDDSMsg ddsmessages)
+
 
 # Publisher
 add_executable(remote remote.cpp)
