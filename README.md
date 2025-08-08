@@ -115,7 +115,7 @@ where speed is between -1 and +1.
 
 ### Callback
 
-There is callback which reports the battery voltage.
+There is a callback which reports the battery voltage.
 
 ## Demo programs
 
