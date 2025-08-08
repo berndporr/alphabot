@@ -39,19 +39,19 @@ public:
 
 public:
     /**
-     * Starts the communication with the robot.
+     * Starts the callbacks about the battery level and enables the GPIO/PWM.
      * 
      * @param _samplingInterval Sampling interval in ms for the ADC data
      */
     void start(long _samplingInterval = DEFAULT_SAMPLING_INTERVAL_MS);
     
     /**
-     * Stops the communication with the Alphabot
+     * Stops the callbacks about the battery level and shuts down the GPIO/PWM.
      */
     void stop();
     
     /**
-     * Destroys the Alpha Bot object and stops any communcation
+     * Destroys the Alpha Bot object and stops any communication
      */
     ~AlphaBot() {
 	stop();
@@ -77,12 +77,6 @@ public:
      * @param speed between -1 and +1
      */
     void setRightWheelSpeed(float speed);
-
-    /**
-     * Get the Battery Level
-     * @return float Battery level in Volt
-     */
-    float getBatteryLevel() { return batteryLevel; }
 
 private:
     static constexpr int PWM_CHANNEL_MOTORL = 2;

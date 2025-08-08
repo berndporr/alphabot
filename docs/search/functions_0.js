@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['getbatterylevel_0',['getBatteryLevel',['../classAlphaBot.html#a783c86eec5d620288b2676815192a288',1,'AlphaBot']]]
+  ['hasbatteryvoltage_0',['hasBatteryVoltage',['../classAlphaBot_1_1BatteryCallback.html#a5f7a3a24be92f8b651b06d9a86470165',1,'AlphaBot::BatteryCallback']]]
 ];
