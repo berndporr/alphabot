@@ -1,4 +1,0 @@
-struct ThrottleMsg
-{
-    float throttle;
-};
