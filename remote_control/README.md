@@ -1,4 +1,4 @@
-# Robot remote control using fastDDS
+# Robot remote control using fastDDS by a logitech steering wheel
 
 ## Prereqisites
 

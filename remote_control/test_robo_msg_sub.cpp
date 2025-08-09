@@ -1,4 +1,5 @@
 // Copyright 2016 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2025 Bernd Porr, mail@berndporr.me.uk
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,9 +62,9 @@ private:
 	    const SubscriptionMatchedStatus& info) override
 	    {
 		if (info.current_count_change == 1)
-		    std::cout << "Subscriber matched." << std::endl;
+		    std::cout << "Steering subscriber matched." << std::endl;
 		else if (info.current_count_change == -1)
-		    std::cout << "Subscriber unmatched." << std::endl;
+		    std::cout << "Steering subscriber unmatched." << std::endl;
 	    }
 
 	// callback
@@ -93,9 +94,9 @@ private:
 	    const SubscriptionMatchedStatus& info) override
 	    {
 		if (info.current_count_change == 1)
-		    std::cout << "Subscriber matched." << std::endl;
+		    std::cout << "Throttle subscriber matched." << std::endl;
 		else if (info.current_count_change == -1)
-		    std::cout << "Subscriber unmatched." << std::endl;
+		    std::cout << "Throttle subscriber unmatched." << std::endl;
 	    }
 
 	// callback
@@ -125,9 +126,9 @@ private:
 	    const SubscriptionMatchedStatus& info) override
 	    {
 		if (info.current_count_change == 1)
-		    std::cout << "Subscriber matched." << std::endl;
+		    std::cout << "Brake subscriber matched." << std::endl;
 		else if (info.current_count_change == -1)
-		    std::cout << "Subscriber unmatched." << std::endl;
+		    std::cout << "Brake subscriber unmatched." << std::endl;
 	    }
 
 	// callback

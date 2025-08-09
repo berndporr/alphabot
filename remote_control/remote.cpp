@@ -55,37 +55,19 @@ private:
     {
     public:
 
-        PubListener()
-            : matched_(0)
-	    {
-	    }
+        PubListener() {}
 
-        ~PubListener() override
-	    {
-	    }
+        ~PubListener() override {}
 
         void on_publication_matched(
 	    DataWriter*,
 	    const PublicationMatchedStatus& info) override
 	    {
 		if (info.current_count_change == 1)
-		{
-		    matched_ = info.total_count;
 		    std::cout << "Publisher matched." << std::endl;
-		}
 		else if (info.current_count_change == -1)
-		{
-		    matched_ = info.total_count;
 		    std::cout << "Publisher unmatched." << std::endl;
-		}
-		else
-		{
-		    std::cout << info.current_count_change
-			      << " is not a valid value for PublicationMatchedStatus current count change." << std::endl;
-		}
 	    }
-
-        std::atomic_int matched_;
 
     } listener_;
 
@@ -93,23 +75,16 @@ public:
 
     RemotePublisher() : typeSteering(new SteeringMsgPubSubType()),
 			typeBrake(new BrakeMsgPubSubType()),
-			typeThrottle(new ThrottleMsgPubSubType())
-	{}
+			typeThrottle(new ThrottleMsgPubSubType()) {}
 
     virtual ~RemotePublisher()
 	{
 	    if (writerSteering != nullptr)
-	    {
 		publisher_->delete_datawriter(writerSteering);
-	    }
 	    if (publisher_ != nullptr)
-	    {
 		participant_->delete_publisher(publisher_);
-	    }
 	    if (topicSteering != nullptr)
-	    {
 		participant_->delete_topic(topicSteering);
-	    }
 	    DomainParticipantFactory::get_instance()->delete_participant(participant_);
 	}
 
@@ -119,11 +94,7 @@ public:
 	    DomainParticipantQos participantQos;
 	    participantQos.name("Participant_publisher");
 	    participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participantQos);
-
-	    if (participant_ == nullptr)
-	    {
-		return false;
-	    }
+	    if (participant_ == nullptr) return false;
 
 	    // Register the Types
 	    typeSteering.register_type(participant_);
@@ -132,75 +103,44 @@ public:
 
 	    // Create the Publisher
 	    publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
-	    if (publisher_ == nullptr)
-	    {
-		return false;
-	    }
+	    if (publisher_ == nullptr) return false;
 
 	    // Steering
 	    topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
-	    if (topicSteering == nullptr) {
-		return false;
-	    }
+	    if (topicSteering == nullptr) return false;
 	    writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
-	    if (writerSteering == nullptr){
-		return false;
-	    }
+	    if (writerSteering == nullptr) return false;
 	
 	    // Throttle
 	    topicThrottle = participant_->create_topic("ThrottleTopic", "ThrottleMsg", TOPIC_QOS_DEFAULT);
-	    if (topicThrottle == nullptr) {
-		return false;
-	    }
+	    if (topicThrottle == nullptr) return false;
 	    writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT, &listener_);
-	    if (writerThrottle == nullptr){
-		return false;
-	    }
+	    if (writerThrottle == nullptr) return false;
 	
 	    // Brake
 	    topicBrake = participant_->create_topic("BrakeTopic", "BrakeMsg", TOPIC_QOS_DEFAULT);
-	    if (topicBrake == nullptr) {
-		return false;
-	    }
+	    if (topicBrake == nullptr) return false;
 	    writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT, &listener_);
-	    if (writerBrake == nullptr){
-		return false;
-	    }
-	
+	    if (writerBrake == nullptr) return false;
 	    return true;
 	}
 
     //!Send a publication
-    bool publishSteering(SteeringMsg& msg)
+    void publishSteering(SteeringMsg& msg)
 	{
-	    if (listener_.matched_ > 0)
-	    {
-		writerSteering->write(&msg);
-		return true;
-	    }
-	    return false;
+	    writerSteering->write(&msg);
 	}
 
     //!Send a publication
-    bool publishThrottle(ThrottleMsg& msg)
+    void publishThrottle(ThrottleMsg& msg)
 	{
-	    if (listener_.matched_ > 0)
-	    {
-		writerThrottle->write(&msg);
-		return true;
-	    }
-	    return false;
+	    writerThrottle->write(&msg);
 	}
 
     //!Send a publication
-    bool publishBrake(BrakeMsg& msg)
+    void publishBrake(BrakeMsg& msg)
 	{
-	    if (listener_.matched_ > 0)
-	    {
-		writerBrake->write(&msg);
-		return true;
-	    }
-	    return false;
+	    writerBrake->write(&msg);
 	}
 };
 
@@ -208,34 +148,23 @@ public:
 int main(int argc, char *argv[]) {
     LogiWheel logiwheel;
     RemotePublisher remotePublisher;
+    
     logiwheel.registerSteeringCallback([&](float v){
 	SteeringMsg msg;
 	msg.steering(v);
-	if (remotePublisher.publishSteering(msg)) {
-	    std::cout << v << " SENT" << std::endl;
-	} else {
-	    std::cout << "No messages sent as there is no listener." << std::endl;
-	}	    
+	remotePublisher.publishSteering(msg);
     });
 
     logiwheel.registerThrottleCallback([&](float v){
 	ThrottleMsg msg;
 	msg.throttle(v);
-	if (remotePublisher.publishThrottle(msg)) {
-	    std::cout << v << " SENT" << std::endl;
-	} else {
-	    std::cout << "No messages sent as there is no listener." << std::endl;
-	}	    
+	remotePublisher.publishThrottle(msg);
     });
 
     logiwheel.registerBrakeCallback([&](float v){
 	BrakeMsg msg;
 	msg.brake(v);
-	if (remotePublisher.publishBrake(msg)) {
-	    std::cout << v << " SENT" << std::endl;
-	} else {
-	    std::cout << "No messages sent as there is no listener." << std::endl;
-	}	    
+	remotePublisher.publishBrake(msg);
     });
 
     if(!remotePublisher.init())
