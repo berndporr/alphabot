@@ -42,7 +42,9 @@ public:
     
     void stop() {
 	running = false;
-	eventThread.join();
+	if (eventThread.joinable()) {
+	    eventThread.join();
+	}
     }
 
 private:
