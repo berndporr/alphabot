@@ -220,7 +220,7 @@ public:
 int main(int,
 	 char**)
 {
-    std::cout << "Starting subscriber. Press any key to stop it." << std::endl;
+    std::cout << "Starting subscriber." << std::endl;
 
     RobotSubscriber mysub;
     if(!mysub.init())
@@ -229,6 +229,7 @@ int main(int,
 	return -1;
     }
 
+    std::cout << "Press any key to stop it." << std::endl;
     // do nothing here
     getchar();
 

@@ -51,26 +51,6 @@ private:
     TypeSupport typeBrake;
     TypeSupport typeThrottle;
 
-    class PubListener : public DataWriterListener
-    {
-    public:
-
-        PubListener() {}
-
-        ~PubListener() override {}
-
-        void on_publication_matched(
-	    DataWriter*,
-	    const PublicationMatchedStatus& info) override
-	    {
-		if (info.current_count_change == 1)
-		    std::cout << "Publisher matched." << std::endl;
-		else if (info.current_count_change == -1)
-		    std::cout << "Publisher unmatched." << std::endl;
-	    }
-
-    } listener_;
-
 public:
 
     RemotePublisher() : typeSteering(new SteeringMsgPubSubType()),
@@ -102,25 +82,25 @@ public:
 	    typeThrottle.register_type(participant_);
 
 	    // Create the Publisher
-	    publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT, nullptr);
+	    publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT);
 	    if (publisher_ == nullptr) return false;
 
 	    // Steering
 	    topicSteering = participant_->create_topic("SteeringTopic", "SteeringMsg", TOPIC_QOS_DEFAULT);
 	    if (topicSteering == nullptr) return false;
-	    writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT, &listener_);
+	    writerSteering = publisher_->create_datawriter(topicSteering, DATAWRITER_QOS_DEFAULT);
 	    if (writerSteering == nullptr) return false;
 	
 	    // Throttle
 	    topicThrottle = participant_->create_topic("ThrottleTopic", "ThrottleMsg", TOPIC_QOS_DEFAULT);
 	    if (topicThrottle == nullptr) return false;
-	    writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT, &listener_);
+	    writerThrottle = publisher_->create_datawriter(topicThrottle, DATAWRITER_QOS_DEFAULT);
 	    if (writerThrottle == nullptr) return false;
 	
 	    // Brake
 	    topicBrake = participant_->create_topic("BrakeTopic", "BrakeMsg", TOPIC_QOS_DEFAULT);
 	    if (topicBrake == nullptr) return false;
-	    writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT, &listener_);
+	    writerBrake = publisher_->create_datawriter(topicBrake, DATAWRITER_QOS_DEFAULT);
 	    if (writerBrake == nullptr) return false;
 	    return true;
 	}
