@@ -169,10 +169,13 @@ int main(int argc, char *argv[]) {
 
     if(!remotePublisher.init())
     {
-	std::cerr << "Pub not init'd." << std::endl;
+	std::cerr << "Publisher init fail. Exiting." << std::endl;
 	return -1;
     }
-    logiwheel.start();
+    if (!logiwheel.start()) {
+	std::cerr << "Wheel init fail. Is it plugged in? Exiting." << std::endl;
+	return -1;
+    }
     printf("Press any key to stop it.\n");
     getc(stdin);
     logiwheel.stop();

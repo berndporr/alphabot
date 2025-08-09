@@ -28,16 +28,15 @@ public:
 	brakeCallback = cb;
     }
 
-    void start(std::string device = "/dev/input/by-id/usb-Logitech_Logitech_Racing_Wheel-event-joystick") {
-	if (running) return;
+    bool start(std::string device = "/dev/input/by-id/usb-Logitech_Logitech_Racing_Wheel-event-joystick") {
+	if (running) return true;
 
         fd = open(device.c_str(), O_RDONLY);
-	
-	if (fd == -1) {
-	    perror("Could not open joystick");
-	    return;
+	if (fd < 0) {
+	    return false;
 	}
 	eventThread = std::thread(&LogiWheel::run, this);
+	return true;
     }
     
     void stop() {
