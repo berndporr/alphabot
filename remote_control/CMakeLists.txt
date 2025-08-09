@@ -9,7 +9,7 @@ set (CMAKE_CXX_STANDARD 17)
 
 # Create a library for the message / topic
 
-set(LIBDDSIDL brake.idl  steering.idl  throttle.idl)
+set(LIBDDSIDL ${CMAKE_SOURCE_DIR}/brake.idl  ${CMAKE_SOURCE_DIR}/steering.idl  ${CMAKE_SOURCE_DIR}/throttle.idl)
 
 execute_process(COMMAND fastddsgen ${LIBDDSIDL})
 
