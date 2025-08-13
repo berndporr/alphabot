@@ -13,7 +13,7 @@
 #include "CppTimer.h"
 #include "rpi_pwm.h"
 
-#define DEFAULT_SAMPLING_INTERVAL_MS 100 // ms
+#define DEFAULT_SAMPLING_INTERVAL_MS 500 // ms
 
 /**
  * Alphabot class which communicates with the Alphabot hardware

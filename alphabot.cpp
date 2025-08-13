@@ -27,7 +27,7 @@ void AlphaBot::stop() {
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
-    const unsigned us = 1;
+    const unsigned us = 2;
     GPIO_ADC_CS.set_value(0);
     usleep(us);
     channel = channel << 4;
@@ -82,7 +82,7 @@ unsigned AlphaBot::readADC(unsigned channel) {
 
 void AlphaBot::timerEvent() {
     // battery
-    batteryLevel = (float)readADC(ADC_VIN) / ADCmax * ADCvref * 2;
+    batteryLevel = (float)readADC(ADC_VIN) / (float)ADCmax * (float)ADCvref * 2.0;
     // callback
     if (nullptr != batteryCallback)
 	batteryCallback->hasBatteryVoltage(batteryLevel);
