@@ -1,4 +1,0 @@
-struct BrakeMsg
-{
-    float brake;
-};
