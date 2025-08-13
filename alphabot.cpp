@@ -55,13 +55,14 @@ unsigned AlphaBot::readADC(unsigned channel) {
     GPIO_ADC_CS.set_value(0);
 
     unsigned value = 0;
+    unsigned mask = 1 << 9;
     for (unsigned i = 0; i < 2; i ++) {
 	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
-	value <<= 1;
 	usleep(us);
 	if (GPIO_ADC_DOUT.get_value())
-	    value |= 0x1;
+	    value |= mask;
+	mask >>= 1;
 	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
     }
@@ -69,9 +70,9 @@ unsigned AlphaBot::readADC(unsigned channel) {
     for (unsigned i = 0; i < 8; i ++) {
 	GPIO_ADC_IOCLK.set_value(1);
 	usleep(us);
-	value <<= 1;
 	if (GPIO_ADC_DOUT.get_value())
-	    value |= 0x1;
+	    value |= mask;
+	mask >>= 1;
 	GPIO_ADC_IOCLK.set_value(0);
 	usleep(us);
     }
@@ -82,7 +83,7 @@ unsigned AlphaBot::readADC(unsigned channel) {
 
 void AlphaBot::timerEvent() {
     // battery
-    batteryLevel = (float)readADC(ADC_VIN) / (float)ADCmax * (float)ADCvref * 2.0;
+    batteryLevel = ((float)readADC(ADC_VIN)) / ((float)ADCmax) * ((float)ADCvref) * 2.0;
     // callback
     if (nullptr != batteryCallback)
 	batteryCallback->hasBatteryVoltage(batteryLevel);

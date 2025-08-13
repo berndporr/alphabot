@@ -108,7 +108,7 @@ private:
     BatteryCallback *batteryCallback = nullptr;
     float leftWheelSpeed = 0;
     float rightWheelSpeed = 0;
-    unsigned batteryLevel = 0;
+    float batteryLevel = 0;
     bool running = false;
     
     RPI_PWM left_wheel_pwm;
