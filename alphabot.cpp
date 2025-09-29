@@ -22,8 +22,15 @@ void AlphaBot::start(long _samplingInterval) {
 
 void AlphaBot::stop() {
     CppTimer::stop();
-    setLeftWheelSpeed(0);
-    setRightWheelSpeed(0);
+    if ( (leftWheelSpeed > 0) || (rightWheelSpeed > 0) ) {
+	for(int i = 0; i<10; i++) {
+	    setLeftWheelSpeed(leftWheelSpeed/1.5);
+	    setRightWheelSpeed(rightWheelSpeed/1.5);
+	    usleep(100000);
+	}
+	setLeftWheelSpeed(0);
+	setRightWheelSpeed(0);
+    }
 }
 
 unsigned AlphaBot::readADC(unsigned channel) {
