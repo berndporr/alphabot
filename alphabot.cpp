@@ -7,11 +7,6 @@ void AlphaBot::start(long _samplingInterval) {
     left_wheel_pwm.start(2,pwmfrequ);
     right_wheel_pwm.start(3,pwmfrequ);
 
-    GPIO_ADC_IOCLK.request({"IOCLK", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
-    GPIO_ADC_ADDR.request({"ADDR", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
-    GPIO_ADC_DOUT.request({"IOCLK", gpiod::line_request::DIRECTION_INPUT, 0},1);  
-    GPIO_ADC_CS.request({"IOCLK", gpiod::line_request::DIRECTION_OUTPUT, 0},1);  
-
     // ADC
     GPIO_ADC_CS.set_value(1);
 

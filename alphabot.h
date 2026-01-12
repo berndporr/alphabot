@@ -15,12 +15,60 @@
 
 #define DEFAULT_SAMPLING_INTERVAL_MS 500 // ms
 
+struct GPIO {
+    GPIO(int pinNo,
+	 bool isOutput = false)
+    {
+	
+	const int chipNo = 0;
+	const std::string chipPath = std::format("/dev/gpiochip{}", chipNo);
+	const std::string consumername = std::format("gpioconsumer_{}_{}", chipNo, pinNo);
+	
+	// Config the pin as input and detecting falling and rising edegs
+	gpiod::line_config line_cfg;
+	if (isOutput) {
+	    line_cfg.add_line_settings(
+				       pinNo,
+				       gpiod::line_settings()
+				       .set_direction(gpiod::line::direction::OUTPUT)
+				       );
+	} else {
+	    line_cfg.add_line_settings(
+				       pinNo,
+				       gpiod::line_settings()
+				       .set_direction(gpiod::line::direction::INPUT)
+				       );
+	}
+	chip = std::make_shared<gpiod::chip>(chipPath);
+	auto builder = chip->prepare_request();
+	builder.set_consumer(consumername);
+	builder.set_line_config(line_cfg);
+	request = std::make_shared<gpiod::line_request>(builder.do_request());
+	if (!request) {
+	    std::cerr << consumername << " could not be opened.\n";
+	    exit(1);
+	}
+    }
+    
+    int get_value() {
+	return (int)(request->get_value(0));
+    }
+    
+    void set_value(int v) {
+	request->set_value(0,(gpiod::line::value)v);
+    }
+    
+    std::shared_ptr<gpiod::chip> chip;
+    std::shared_ptr<gpiod::line_request> request;
+};
+
+
+
 /**
  * Alphabot class which communicates with the Alphabot hardware
  */
 class AlphaBot : public CppTimer
 {
-
 public:
     /**
      * Callback interface which is called at the specified sampling
@@ -92,11 +140,10 @@ private:
     }
     
     // TLC1543
-    ::gpiod::chip chip{"gpiochip0"};
-    ::gpiod::line GPIO_ADC_IOCLK = chip.get_line(25);
-    ::gpiod::line GPIO_ADC_ADDR = chip.get_line(24);
-    ::gpiod::line GPIO_ADC_DOUT = chip.get_line(23);
-    ::gpiod::line GPIO_ADC_CS = chip.get_line(5);
+    GPIO GPIO_ADC_IOCLK{25,true};
+    GPIO GPIO_ADC_ADDR{24,true};
+    GPIO GPIO_ADC_DOUT{23,false};
+    GPIO GPIO_ADC_CS{5,true};
     static constexpr float ADCmax = 1023;
     static constexpr float ADCvref = 5;
     
